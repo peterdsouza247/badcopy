@@ -1,0 +1,31 @@
+:root {
+  /* Duotone noir. Deep blue black, signal amber, detective cyan. */
+  --void: #05070c;
+  --slate: #0e141f;
+  --steel: #1c2637;
+  --signal: #f0a828;
+  --detective: #58c6e8;
+  --wound: #d8412f;
+  --bone: #c8ceda;
+  --dim: #6d7a90;
+
+  --font-chrome: 'Oswald', 'Arial Narrow', sans-serif;
+  --font-traffic: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --font-label: 'Inter', system-ui, sans-serif;
+
+  --edge: 1px solid rgba(88, 198, 232, 0.16);
+  --edge-hot: 1px solid rgba(240, 168, 40, 0.34);
+  --glow-signal: 0 0 18px rgba(240, 168, 40, 0.14);
+  --glow-detective: 0 0 22px rgba(88, 198, 232, 0.13);
+
+  --pad: 14px;
+  --radius: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
