@@ -5,5 +5,5 @@ import react from '@vitejs/plugin-react'
 // For https://<user>.github.io/bad-copy/ this must be '/bad-copy/'.
 export default defineConfig({
   plugins: [react()],
-  base: '/bad-copy/',
+  base: '/badcopy/',
 })
