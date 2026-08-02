@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { buildNodes, neighbours } from '../data/board'
-import { buildSoldiers, buildSquads, REPLACEMENT_NAMES, THREAD_SOL } from '../data/cast'
+import { buildSoldiers, buildSquads, REPLACEMENT_NAMES, surname, THREAD_SOL } from '../data/cast'
 import { CAMPAIGN_OBJECTIVE, INTERCEPTS, MISSIONS } from '../data/campaign'
 import { pickExchange } from '../data/dialogue'
 import { newSeed, streamFor } from '../engine/rng'
@@ -550,7 +550,7 @@ export const useGame = create<GameState & Actions>((set, get) => ({
         soldiers[id] = {
           id,
           name,
-          shortName: name.split(' ')[1].toUpperCase(),
+          shortName: surname(name),
           rank: 'Rifleman',
           squadId: squad.id,
           leader: false,

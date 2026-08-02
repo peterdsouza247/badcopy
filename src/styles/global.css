@@ -40,7 +40,7 @@ body {
 .bc-shell {
   height: 100%;
   display: grid;
-  grid-template-rows: auto auto auto minmax(0, 1fr) auto;
+  grid-template-rows: auto auto minmax(0, 1fr) auto auto;
 }
 
 /* Debrief and title take the whole middle row rather than a fixed slot. */
@@ -783,22 +783,9 @@ body {
 
 
 
-.bc-roster-btn {
-  appearance: none;
-  cursor: pointer;
-  background: transparent;
-  border: var(--edge);
-  color: var(--dim);
-  font-family: var(--font-chrome);
-  letter-spacing: 0.2em;
-  font-size: 11px;
-  padding: 7px 13px;
-}
 
-.bc-roster-btn:hover {
-  color: var(--detective);
-  border-color: rgba(88, 198, 232, 0.4);
-}
+
+
 
 /* ------------------------------------------------------------ board panel */
 
@@ -1022,15 +1009,7 @@ body {
 /* Squads across the top, traffic and orders in one readable column, and the
    whole right side given to a map you can actually pan and zoom. */
 
-.bc-squadtabs {
-  display: flex;
-  gap: 2px;
-  padding: 0 10px;
-  border-bottom: var(--edge);
-  overflow-x: auto;
-  scrollbar-width: none;
-  background: linear-gradient(180deg, rgba(28, 38, 55, 0.4), transparent);
-}
+
 
 .bc-squadtabs::-webkit-scrollbar {
   display: none;
@@ -1467,57 +1446,17 @@ body {
 
 /* ------------------------------------------------------- earlier traffic */
 
-.bc-log {
-  margin-top: 20px;
-  border-top: var(--edge);
-  padding-top: 12px;
-}
 
-.bc-log-head {
-  appearance: none;
-  cursor: pointer;
-  width: 100%;
-  background: transparent;
-  border: var(--edge);
-  color: var(--dim);
-  font-family: var(--font-chrome);
-  letter-spacing: 0.2em;
-  font-size: 11px;
-  padding: 10px 13px;
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  text-align: left;
-}
 
-.bc-log-head:hover {
-  color: var(--detective);
-  border-color: rgba(88, 198, 232, 0.35);
-}
 
-.bc-log-head em {
-  margin-left: auto;
-  font-style: normal;
-  font-family: var(--font-label);
-  letter-spacing: 0.02em;
-  font-size: 10.5px;
-  text-transform: none;
-}
 
-.bc-log-body {
-  margin-top: 12px;
-  opacity: 0.72;
-}
 
-.bc-log-day {
-  font-family: var(--font-chrome);
-  letter-spacing: 0.24em;
-  font-size: 10px;
-  color: var(--signal);
-  margin: 16px 0 8px;
-  padding-bottom: 5px;
-  border-bottom: 1px solid rgba(240, 168, 40, 0.2);
-}
+
+
+
+
+
+
 
 /* ------------------------------------------------- orders at feed bottom */
 
@@ -1525,7 +1464,7 @@ body {
   border-color: rgba(240, 168, 40, 0.3);
   padding: 0 0 14px;
   margin-top: 20px;
-  scroll-margin-top: 12px;
+  scroll-margin: 16px 0 20px;
 }
 
 .bc-orders-head {
@@ -1540,4 +1479,152 @@ body {
 .bc-btn:disabled small {
   color: #7a6a52;
   font-style: italic;
+}
+
+
+/* ============================================== BOTTOM SQUAD BAR v5 */
+/* Reading order top to bottom: what happened, what you must do, the traffic,
+   then who you are talking to, then their vitals. The squad selector sits
+   between the feed and the strip because that is when you reach for it. */
+
+.bc-squadtabs {
+  display: flex;
+  gap: 2px;
+  padding: 0 10px;
+  border-top: var(--edge);
+  overflow-x: auto;
+  scrollbar-width: none;
+  background: linear-gradient(0deg, rgba(28, 38, 55, 0.45), transparent);
+}
+
+.bc-squadtabs::-webkit-scrollbar {
+  display: none;
+}
+
+.bc-squadtab {
+  border-bottom: 0;
+  border-top: 2px solid transparent;
+  padding: 7px 14px 8px;
+}
+
+.bc-squadtab[aria-selected='true'] {
+  border-bottom-color: transparent;
+  border-top-color: var(--sq, var(--signal));
+}
+
+/* -------------------------------------------------------- header buttons */
+
+.bc-roster-btn {
+  appearance: none;
+  cursor: pointer;
+  background: transparent;
+  border: var(--edge);
+  color: var(--dim);
+  font-family: var(--font-chrome);
+  letter-spacing: 0.2em;
+  font-size: 11px;
+  padding: 7px 12px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex: 0 0 auto;
+}
+
+.bc-roster-btn:hover:not(:disabled) {
+  color: var(--detective);
+  border-color: rgba(88, 198, 232, 0.4);
+}
+
+.bc-roster-btn:disabled {
+  opacity: 0.34;
+  cursor: not-allowed;
+}
+
+.bc-roster-btn em {
+  font-style: normal;
+  font-family: var(--font-label);
+  font-size: 9.5px;
+  letter-spacing: 0.04em;
+  color: var(--signal);
+  background: rgba(240, 168, 40, 0.14);
+  border-radius: 8px;
+  padding: 1px 6px;
+}
+
+/* --------------------------------------------------------- log in drawer */
+
+.bc-log-day {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  font-family: var(--font-chrome);
+  letter-spacing: 0.26em;
+  font-size: 11px;
+  color: var(--signal);
+  margin: 22px 0 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(240, 168, 40, 0.22);
+}
+
+.bc-log-day:first-child {
+  margin-top: 0;
+}
+
+.bc-log-day em {
+  margin-left: auto;
+  font-style: normal;
+  font-family: var(--font-label);
+  letter-spacing: 0.02em;
+  font-size: 10.5px;
+  color: var(--dim);
+}
+
+@media (max-width: 900px) {
+  .bc-squadtabs {
+    padding: 0 6px;
+  }
+}
+
+
+/* ------------------------------------------------------- name treatment */
+/* Surname on the net, rank and full name in the roster and on name cards.
+   Colour always follows the squad, so who is speaking is legible before a
+   single word is read. */
+
+.bc-who {
+  font-family: var(--font-chrome);
+  letter-spacing: 0.18em;
+}
+
+.bc-head .bc-dot {
+  align-self: center;
+}
+
+.bc-option-top .bc-dot {
+  align-self: center;
+}
+
+.bc-outgoing .bc-traffic b {
+  font-weight: 500;
+  letter-spacing: 0.14em;
+}
+
+.bc-calib {
+  padding-left: 10px;
+}
+
+.bc-namecard b {
+  transition: none;
+}
+
+
+/* A brief pulse on the orders header when the squad changes, so a card that
+   scrolls into place reads as new rather than as the page having jumped. */
+@keyframes bc-flash {
+  0% { background: rgba(240, 168, 40, 0.28); }
+  100% { background: rgba(240, 168, 40, 0.06); }
+}
+
+.bc-orders-head {
+  animation: bc-flash 600ms ease-out;
 }

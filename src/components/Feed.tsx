@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import type { FeedItem } from '../engine/types'
 import { formatClock, useGame } from '../state/store'
 
@@ -19,7 +18,10 @@ function Report({ item, turn, stale }: { item: FeedItem; turn: number; stale?: s
     >
       <div className="bc-head">
         <span className="bc-stamp">{formatClock(item.stamp)}</span>
-        <span>{item.title}</span>
+        {item.squadId && <span className={`bc-dot bc-dot-${item.squadId}`} />}
+        <span className="bc-who" style={{ color: item.squadId ? `var(--${item.squadId})` : undefined }}>
+          {item.title}
+        </span>
         <Age item={item} turn={turn} />
       </div>
       <div className="bc-traffic">
@@ -83,9 +85,13 @@ function Intercept({ item }: { item: FeedItem }) {
 
 function Outgoing({ item }: { item: FeedItem }) {
   return (
-    <article className="bc-panel bc-outgoing">
+    <article
+      className="bc-panel bc-outgoing bc-from"
+      style={item.squadId ? ({ '--from': `var(--${item.squadId})` } as React.CSSProperties) : undefined}
+    >
       <div className="bc-traffic">
-        {formatClock(item.stamp)} {item.title}: {item.body}
+        {formatClock(item.stamp)}{' '}
+        <b style={{ color: item.squadId ? `var(--${item.squadId})` : undefined }}>{item.title}</b>: {item.body}
       </div>
     </article>
   )
@@ -126,19 +132,9 @@ function render(items: FeedItem[], turn: number, beliefs: ReturnType<typeof useG
 
 export function Feed() {
   const feed = useGame((s) => s.feed)
-  const archive = useGame((s) => s.archive)
   const turn = useGame((s) => s.turn)
   const beliefs = useGame((s) => s.beliefs)
   const sol = useGame((s) => s.sol)
-  const [logOpen, setLogOpen] = useState(false)
-
-  const byDay = new Map<number, FeedItem[]>()
-  for (const item of archive) {
-    const s = item.sol ?? 0
-    if (!byDay.has(s)) byDay.set(s, [])
-    byDay.get(s)!.push(item)
-  }
-  const earlier = [...byDay.entries()].sort((a, b) => b[0] - a[0])
 
   return (
     <div>
@@ -149,48 +145,67 @@ export function Feed() {
       ) : (
         render(feed, turn, beliefs, sol)
       )}
+    </div>
+  )
+}
 
-      {earlier.length > 0 && (
-        <div className="bc-log">
-          <button className="bc-log-head" onClick={() => setLogOpen((o) => !o)} aria-expanded={logOpen}>
-            <span className="bc-caret">{logOpen ? '\u25BE' : '\u25B8'}</span>
-            EARLIER TRAFFIC
-            <em>
-              {earlier.length} sol{earlier.length > 1 ? 's' : ''}, {archive.length} messages
-            </em>
-          </button>
-          {logOpen && (
-            <div className="bc-log-body">
-              {earlier.map(([daySol, items]) => (
-                <div key={daySol}>
-                  <div className="bc-log-day">SOL {daySol}</div>
-                  {render(items, turn, beliefs, daySol)}
-                </div>
-              ))}
-            </div>
-          )}
+/**
+ * Everything from earlier sols, grouped by day. Lives in a drawer off the top
+ * bar rather than under the feed, because the bottom of a scrolling column is
+ * where things go to never be found.
+ */
+export function Log() {
+  const archive = useGame((s) => s.archive)
+  const turn = useGame((s) => s.turn)
+  const beliefs = useGame((s) => s.beliefs)
+
+  if (archive.length === 0) {
+    return <div className="bc-panel"><div className="bc-traffic">No earlier traffic yet. This is your first sol.</div></div>
+  }
+
+  const byDay = new Map<number, FeedItem[]>()
+  for (const item of archive) {
+    const s = item.sol ?? 0
+    if (!byDay.has(s)) byDay.set(s, [])
+    byDay.get(s)!.push(item)
+  }
+  const days = [...byDay.entries()].sort((a, b) => b[0] - a[0])
+
+  return (
+    <div>
+      {days.map(([daySol, items]) => (
+        <div key={daySol}>
+          <div className="bc-log-day">
+            SOL {daySol}
+            <em>{items.length} messages</em>
+          </div>
+          {render(items, turn, beliefs, daySol)}
         </div>
-      )}
+      ))}
     </div>
   )
 }
 
 export function NameCards() {
   const casualties = useGame((s) => s.casualties)
+  const soldiers = useGame((s) => s.soldiers)
   if (casualties.length === 0) return null
   return (
     <div>
-      {casualties.map((c) => (
-        <div className="bc-namecard" key={c.soldierId}>
-          <b>{c.name.toUpperCase()}</b>
-          <span>
-            {c.rank}, {c.squadName}
-          </span>
-          <span>
-            {c.born} to {c.died}
-          </span>
-        </div>
-      ))}
+      {casualties.map((c) => {
+        const sq = soldiers[c.soldierId]?.squadId
+        return (
+          <div className="bc-namecard" key={c.soldierId}>
+            <b style={{ color: sq ? `var(--${sq})` : undefined }}>{c.name.toUpperCase()}</b>
+            <span>
+              {c.rank}, {c.squadName}
+            </span>
+            <span>
+              {c.born} to {c.died}
+            </span>
+          </div>
+        )
+      })}
     </div>
   )
 }

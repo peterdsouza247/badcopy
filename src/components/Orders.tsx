@@ -83,7 +83,9 @@ export function Orders() {
     <section className="bc-panel bc-orders" id="orders">
       <div className="bc-orders-head">
         <span className={`bc-dot bc-dot-${squad.id}`} />
-        <span className="bc-callsign">{squad.callsign}</span>
+        <span className="bc-callsign" style={{ color: `var(--${squad.id})` }}>
+          {squad.callsign}
+        </span>
         <span className="bc-where">{node.name}</span>
         {acted && <span className="bc-sent-chip">ORDERS SENT</span>}
         <span className={`bc-chip is-${comms}`} title={COMMS_BLURB[comms]}>
@@ -117,7 +119,8 @@ export function Orders() {
       </div>
 
       <div className="bc-section-label">
-        SAY SOMETHING TO {leader?.shortName ?? 'THEM'}
+        SAY SOMETHING TO{' '}
+        <b style={{ color: `var(--${squad.id})`, letterSpacing: '0.18em' }}>{leader?.shortName ?? 'THEM'}</b>
         <em className={`bc-nerve-${leader?.nerve ?? 'Steady'}`}>{leader?.nerve}</em>
       </div>
       <div className="bc-verbs">

@@ -31,9 +31,15 @@ export function Decisions() {
               const s = soldiers[o.soldierId]
               const read = s?.read === 'confirmed'
               return (
-                <button key={o.soldierId} className="bc-btn bc-option" onClick={() => believe(d.id, o.soldierId)}>
+                <button
+                  key={o.soldierId}
+                  className="bc-btn bc-option bc-from"
+                  style={s ? ({ '--from': `var(--${s.squadId})` } as React.CSSProperties) : undefined}
+                  onClick={() => believe(d.id, o.soldierId)}
+                >
                   <span className="bc-option-top">
-                    <b>{o.shortName}</b>
+                    {s && <span className={`bc-dot bc-dot-${s.squadId}`} />}
+                    <b style={{ color: s ? `var(--${s.squadId})` : undefined }}>{o.shortName}</b>
                     <em>says {o.count}</em>
                     <i>{o.confidence}</i>
                   </span>
@@ -62,6 +68,7 @@ export function Decisions() {
  */
 export function Calibration() {
   const beliefs = useGame((s) => s.beliefs)
+  const soldiers = useGame((s) => s.soldiers)
   const sol = useGame((s) => s.sol)
   const rows = beliefs.filter((b) => b.sol === sol)
 
@@ -76,6 +83,7 @@ export function Calibration() {
         I pulled the records. Here's what was actually on that ground, for whatever it's worth to you now.
       </p>
       {rows.map((b) => {
+        const sq = soldiers[b.soldierId]?.squadId
         const gap = b.believed - b.truth
         const verdict =
           Math.abs(gap) <= 2
@@ -84,7 +92,11 @@ export function Calibration() {
               ? `${b.shortName} said more than there were. By ${gap}.`
               : `${b.shortName} said fewer than there were. By ${Math.abs(gap)}.`
         return (
-          <div className="bc-calib" key={b.nodeId + b.sol}>
+          <div
+            className="bc-calib bc-from"
+            style={sq ? ({ '--from': `var(--${sq})` } as React.CSSProperties) : undefined}
+            key={b.nodeId + b.sol}
+          >
             <div className="bc-calib-top">
               <span>{b.nodeName}</span>
               <b>

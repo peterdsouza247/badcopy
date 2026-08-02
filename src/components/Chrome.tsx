@@ -3,7 +3,7 @@ import { COMMS_BLURB, degrade } from '../engine/traits'
 import type { CommsState } from '../engine/types'
 import { formatClock, useGame } from '../state/store'
 
-export function TopBar({ onOpenCompany }: { onOpenCompany?: () => void }) {
+export function TopBar({ onOpenCompany, onOpenLog, logCount }: { onOpenCompany?: () => void; onOpenLog?: () => void; logCount?: number }) {
   const { sol, turn, squads, nodes, dust, commandStanding, companyTrust, selectedSquadId } = useGame()
   const squad = selectedSquadId ? squads[selectedSquadId] : undefined
   const node = squad ? nodes[squad.nodeId] : undefined
@@ -39,6 +39,13 @@ export function TopBar({ onOpenCompany }: { onOpenCompany?: () => void }) {
         {squad ? squad.callsign : 'LINK'} <b>{state}</b>
       </div>
 
+      {onOpenLog && (
+        <button className="bc-roster-btn" onClick={onOpenLog} disabled={!logCount}>
+          LOGS
+          {Boolean(logCount) && <em>{logCount}</em>}
+        </button>
+      )}
+
       {onOpenCompany && (
         <button className="bc-roster-btn" onClick={onOpenCompany}>
           ROSTER
@@ -58,8 +65,18 @@ export function Telemetry() {
   const soldiers = useGame((s) => s.soldiers)
   const turn = useGame((s) => s.turn)
 
+  const squads = useGame((s) => s.squads)
+
   const traces = useMemo(() => {
-    return Object.values(soldiers).map((sol) => {
+    // Same order as the squad tabs, leader first inside each squad, so the
+    // strip reads as the company rather than as insertion order.
+    const ordered = Object.values(squads).flatMap((sq) =>
+      sq.memberIds
+        .map((id) => soldiers[id])
+        .filter(Boolean)
+        .sort((a, b) => Number(b.leader) - Number(a.leader)),
+    )
+    return ordered.map((sol) => {
       const base = {
         id: sol.id,
         name: sol.shortName,
@@ -81,7 +98,7 @@ export function Telemetry() {
       }
       return { ...base, alive: true, d: `M${pts.join(' L')}` }
     })
-  }, [soldiers, turn])
+  }, [soldiers, squads, turn])
 
   return (
     <div className="bc-telemetry" aria-label="Squad vitals">

@@ -3,7 +3,7 @@ import { Board } from './components/Board'
 import { Telemetry, Toasts, TopBar } from './components/Chrome'
 import { Company } from './components/Company'
 import { Calibration, Decisions } from './components/Decision'
-import { Feed, NameCards } from './components/Feed'
+import { Feed, Log, NameCards } from './components/Feed'
 import { Orders } from './components/Orders'
 import { SquadTabs } from './components/SquadTabs'
 import { CAMPAIGN_OBJECTIVE, MISSIONS, useGame } from './state/store'
@@ -130,15 +130,26 @@ function Over() {
 }
 
 export default function App() {
-  const { started, phase, endTurn, turn, missionIndex, actedThisTurn, squads, decisions } = useGame()
-  const [drawer, setDrawer] = useState(false)
+  const {
+    started,
+    phase,
+    endTurn,
+    turn,
+    missionIndex,
+    actedThisTurn,
+    squads,
+    decisions,
+    archive,
+    selectedSquadId,
+  } = useGame()
+  const [drawer, setDrawer] = useState<null | 'roster' | 'log'>(null)
   const [mobilePane, setMobilePane] = useState<'traffic' | 'map'>('traffic')
   const mission = MISSIONS[missionIndex]
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Enter' && phase === 'ops' && decisions.length === 0) endTurn()
-      if (e.key === 'Escape') setDrawer(false)
+      if (e.key === 'Escape') setDrawer(null)
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
@@ -160,12 +171,14 @@ export default function App() {
     <>
       <div className="bc-atmosphere" />
       <div className="bc-shell">
-        <TopBar onOpenCompany={() => setDrawer(true)} />
+        <TopBar
+          onOpenCompany={() => setDrawer('roster')}
+          onOpenLog={() => setDrawer('log')}
+          logCount={archive.length}
+        />
 
         {phase === 'ops' && (
           <>
-            <SquadTabs />
-
             <div className="bc-taskbar">
               <span className="bc-task-label">SOL {mission.sol}</span>
               <span className="bc-task-text">{mission.task}</span>
@@ -194,13 +207,15 @@ export default function App() {
               <section className={`bc-column bc-traffic-col${mobilePane === 'traffic' ? ' is-shown' : ''}`}>
                 <Decisions />
                 <Feed />
-                <Orders />
+                <Orders key={selectedSquadId ?? 'none'} />
               </section>
 
               <section className={`bc-map-col${mobilePane === 'map' ? ' is-shown' : ''}`}>
                 <Board />
               </section>
             </div>
+
+            <SquadTabs />
           </>
         )}
 
@@ -211,13 +226,13 @@ export default function App() {
       </div>
 
       {drawer && (
-        <div className="bc-drawer-scrim" onClick={() => setDrawer(false)}>
+        <div className="bc-drawer-scrim" onClick={() => setDrawer(null)}>
           <aside className="bc-drawer" onClick={(e) => e.stopPropagation()}>
             <div className="bc-drawer-head">
-              <span>THE COMPANY</span>
-              <button onClick={() => setDrawer(false)}>CLOSE</button>
+              <span>{drawer === 'roster' ? 'THE COMPANY' : 'EARLIER TRAFFIC'}</span>
+              <button onClick={() => setDrawer(null)}>CLOSE</button>
             </div>
-            <Company />
+            {drawer === 'roster' ? <Company /> : <Log />}
           </aside>
         </div>
       )}
