@@ -39,9 +39,13 @@ npm run dev
 
 ## Deploying to GitHub Pages
 
-1. Set `base` in `vite.config.ts` to `'/<your-repo-name>/'`.
-2. Push to `main`.
-3. Repository settings, Pages, set Source to **GitHub Actions**.
+1. Push to `main`.
+2. Repository settings, Pages, set Source to **GitHub Actions**.
+
+`base` is set to `'./'` so the build works at any repo name and on a custom
+domain. Do not set it to an absolute path unless you add a client side router,
+because an absolute base that does not match the repo name serves a blank page
+with no error.
 
 The workflow in `.github/workflows/deploy.yml` builds and publishes on every
 push to `main`.

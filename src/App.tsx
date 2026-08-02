@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { Board } from './components/Board'
 import { Telemetry, Toasts, TopBar } from './components/Chrome'
 import { Company } from './components/Company'
+import { Calibration, Decisions } from './components/Decision'
 import { Feed, NameCards } from './components/Feed'
 import { Orders } from './components/Orders'
 import { Silhouette } from './components/Silhouette'
@@ -27,6 +28,28 @@ function Title() {
         </p>
 
         <div className="bc-panel is-hot">
+          <div className="bc-head">
+            <span>HOW THIS WORKS</span>
+          </div>
+          <ol className="bc-howto">
+            <li>
+              <b>Give orders.</b> Pick a squad on the left, send it somewhere.
+            </li>
+            <li>
+              <b>End the window.</b> Time passes. You cannot watch. Reports come back.
+            </li>
+            <li>
+              <b>Decide who to believe.</b> Your people will contradict each other. Nobody will tell you who
+              is right.
+            </li>
+            <li>
+              <b>Live with it.</b> After the sol, Wren pulls the records and you find out what was really
+              there. Too late to help, early enough to learn.
+            </li>
+          </ol>
+        </div>
+
+        <div className="bc-panel">
           <div className="bc-head">
             <span>CAMPAIGN OBJECTIVE</span>
           </div>
@@ -83,6 +106,7 @@ function Debrief() {
         </div>
       )}
 
+      <Calibration />
       <NameCards />
 
       <button className="bc-btn is-primary" onClick={nextMission}>
@@ -172,6 +196,7 @@ export default function App() {
   }
 
   const allActed = Object.keys(squads).every((id) => actedThisTurn.includes(id))
+  const openCalls = useGame.getState().decisions.length
 
   return (
     <>
@@ -202,10 +227,25 @@ export default function App() {
               </button>
             </nav>
 
+            <div className="bc-orders-bar">
+              <span className="bc-orders-label">YOUR TASK</span>
+              <span className="bc-orders-text">{mission.task}</span>
+              {openCalls > 0 && (
+                <button className="bc-orders-call" onClick={() => setView('feed')}>
+                  {openCalls} DECISION{openCalls > 1 ? 'S' : ''} WAITING
+                </button>
+              )}
+            </div>
+
             <div className="bc-body">
               <Rail />
               <main className="bc-main">
-                {view === 'feed' && <Feed />}
+                {view === 'feed' && (
+                  <>
+                    <Decisions />
+                    <Feed />
+                  </>
+                )}
                 {view === 'board' && <Board />}
                 {view === 'company' && <Company />}
                 {view === 'orders' && <Orders />}

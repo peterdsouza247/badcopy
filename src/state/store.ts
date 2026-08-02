@@ -8,7 +8,9 @@ import { buildReport, resolveEngagement, worsen } from '../engine/resolve'
 import { persist, restore, SAVE_VERSION, wipe } from '../engine/save'
 import { COMMS_LATENCY, degrade } from '../engine/traits'
 import type {
+  Belief,
   DeathRecord,
+  Decision,
   FeedItem,
   GameState,
   Intent,
@@ -25,6 +27,10 @@ const NERVE_ORDER: Nerve[] = ['Gone', 'Breaking', 'Shaken', 'Steady']
 function shiftNerve(n: Nerve, delta: number): Nerve {
   const i = NERVE_ORDER.indexOf(n)
   return NERVE_ORDER[Math.min(Math.max(i + delta, 0), NERVE_ORDER.length - 1)]
+}
+
+function feedFor(items: FeedItem[], soldierId: string) {
+  return items.find((i) => i.kind === 'report' && i.soldierId === soldierId)
 }
 
 /** In fiction clock. One turn is ten minutes, campaign day starts at 0400. */
@@ -78,6 +84,10 @@ function freshState(seed: string): GameState {
     flags: {},
     toasts: [],
     actedThisTurn: [],
+    decisions: [],
+    beliefs: [],
+    unlocked: MISSIONS[0].verbs,
+    coach: 0,
     view: 'feed',
     selectedSquadId: 'sq1',
     dust: false,
@@ -106,6 +116,8 @@ interface Actions {
   speak: (squadId: string, verb: SpeakVerb) => void
   dropBeacon: (squadId: string) => void
   endTurn: () => void
+  believe: (decisionId: string, soldierId: string) => void
+  advanceCoach: () => void
   nextMission: () => void
   dismissToast: (id: string) => void
   reset: () => void
@@ -159,6 +171,8 @@ export const useGame = create<GameState & Actions>((set, get) => ({
       pins: {},
       turn: 0,
       actedThisTurn: [],
+      decisions: [],
+      unlocked: m.verbs,
       sol: m.sol,
     })
   },
@@ -452,6 +466,28 @@ export const useGame = create<GameState & Actions>((set, get) => ({
       }
     }
 
+    // A conflict is not a label. It is a question, and the player has to
+    // answer it before the window closes. This is the game, made into a button.
+    const decisions: Decision[] = []
+    for (const pin of Object.values(pins)) {
+      if (pin.colour !== 'red') continue
+      if (s.decisions.some((d) => d.nodeId === pin.nodeId)) continue
+      if (get().beliefs.some((b) => b.nodeId === pin.nodeId && b.sol === s.sol)) continue
+      const node = nodes[pin.nodeId]
+      const options = pin.claims.map((c) => {
+        const src = feedFor(arrived, c.soldierId)
+        return {
+          soldierId: c.soldierId,
+          shortName: c.shortName,
+          count: c.count,
+          confidence: src?.confidence ?? ('GUESSING' as const),
+          line: src?.situation ?? '',
+        }
+      })
+      if (options.length < 2) continue
+      decisions.push({ id: `dec-${pin.nodeId}-${turn}`, nodeId: pin.nodeId, nodeName: node.name, options })
+    }
+
     // Conflict is computed for the player. It never says who is right.
     const flagged = arrived.map((item) => {
       if (item.kind !== 'report' || !item.nodeId) return item
@@ -475,6 +511,7 @@ export const useGame = create<GameState & Actions>((set, get) => ({
       toasts: [...s.toasts, ...toasts],
       actedThisTurn: [],
       flags,
+      decisions: [...s.decisions, ...decisions],
       phase: over ? 'debrief' : 'ops',
     }
 
@@ -591,10 +628,52 @@ export const useGame = create<GameState & Actions>((set, get) => ({
       queue: [],
       pins: {},
       actedThisTurn: [],
+      decisions: [],
+      unlocked: m.verbs,
       flags: carriedFlags,
     })
     persist({ ...get() })
   },
+
+  believe: (decisionId: string, soldierId: string) =>
+    set((s) => {
+      const d = s.decisions.find((x) => x.id === decisionId)
+      if (!d) return s
+      const opt = d.options.find((o) => o.soldierId === soldierId)
+      if (!opt) return s
+      const node = s.nodes[d.nodeId]
+
+      // The board now shows what you decided to act on, not an average of
+      // what you were told. Being wrong is a position you took.
+      const pin = s.pins[d.nodeId]
+      const pins = pin
+        ? { ...s.pins, [d.nodeId]: { ...pin, colour: 'green' as const, claims: [
+            { soldierId: opt.soldierId, shortName: opt.shortName, count: opt.count, turn: s.turn },
+          ] } }
+        : s.pins
+
+      const belief: Belief = {
+        nodeId: d.nodeId,
+        nodeName: d.nodeName,
+        soldierId: opt.soldierId,
+        shortName: opt.shortName,
+        believed: opt.count,
+        truth: node.truthEnemy,
+        sol: s.sol,
+      }
+
+      return {
+        decisions: s.decisions.filter((x) => x.id !== decisionId),
+        beliefs: [...s.beliefs.filter((b) => !(b.nodeId === d.nodeId && b.sol === s.sol)), belief],
+        pins,
+        toasts: [
+          ...s.toasts,
+          { id: `b-${decisionId}`, text: `YOU ARE ACTING ON ${opt.shortName}`, tone: 'signal' as const },
+        ],
+      }
+    }),
+
+  advanceCoach: () => set((s) => ({ coach: s.coach + 1 })),
 
   dismissToast: (id) => set((s) => ({ toasts: s.toasts.filter((t) => t.id !== id) })),
 

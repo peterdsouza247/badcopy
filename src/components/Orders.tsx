@@ -29,6 +29,7 @@ export function Orders() {
     nodes,
     selectedSquadId,
     actedThisTurn,
+    unlocked,
     dust,
     issueOrder,
     speak,
@@ -75,7 +76,7 @@ export function Orders() {
           <span>ORDERS</span>
         </div>
         <div className="bc-grid2">
-          {VERBS.map(([verb, blurb, needsTarget]) => (
+          {VERBS.filter(([verb]) => unlocked.includes(verb)).map(([verb, blurb, needsTarget]) => (
             <button
               key={verb}
               className="bc-btn"
@@ -128,7 +129,7 @@ export function Orders() {
         )}
       </section>
 
-      <section className="bc-panel">
+      <section className="bc-panel" hidden={unlocked.length < 5}>
         <div className="bc-head">
           <span>STANDING INTENT</span>
         </div>
@@ -146,7 +147,7 @@ export function Orders() {
         </div>
       </section>
 
-      <section className="bc-panel">
+      <section className="bc-panel" hidden={unlocked.length < 3}>
         <div className="bc-head">
           <span>RELAY BEACON</span>
           <span className="bc-age">{squad.beacons} left</span>

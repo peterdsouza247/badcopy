@@ -1,14 +1,8 @@
 # BAD COPY — SETTING BIBLE
-### Mars rework, v0.3
-Supersedes the orbital framing in GDD §4.
 
 ---
 
 ## 1. WHY MARS IS BETTER
-
-The orbital version bought its DARK windows from a clock. The player waited them out and had no agency over them.
-
-Mars gives you something far better: **silence becomes a place.**
 
 Mars has no global magnetosphere and effectively no ionosphere. There is no skywave propagation — radio cannot bounce over the horizon the way it does on Earth. And because Mars is small, the horizon is *close*: about 3.4 km at standing height, against 5 km on Earth.
 
@@ -93,23 +87,3 @@ Environment as a second clock, and it's a hard one.
 - **Water is ammunition.** Suit recycling is imperfect. A squad out of contact for a long patrol is also a squad running down its reclaim. Nobody has to say this out loud; it just makes the Sink terrifying.
 
 ---
-
-## 6. LINEAGE
-
-For tone reference, and for arguing about later.
-
-| Source | What we're taking |
-|---|---|
-| **Halo: Reach** | The structural spine. A named team, attrited one at a time, in a campaign the player cannot win. Every death is scheduled by fiction, not by failure. |
-| **Mass Effect 2** | Loyalty as a survival gate. Knowing a soldier is not flavour — it is the mechanism by which they live. |
-| **Black Ops** | Unreliable narration as the load-bearing structure, not a twist. Numbers stations become our intercepts. |
-| **Splinter Cell (Chaos Theory)** | The handler chair, inverted. You are Lambert now, and Lambert was always the one who couldn't help. |
-| **Modern Warfare 2** | The AC-130 problem — watching people die through a mediated display — extended to the entire runtime. Plus Shepherd: the order that comes from inside the house. |
-| **Battlefield 1** | The name card. When someone dies you get their name and their dates and nothing else, and it is worse than a cutscene. |
-| **Ghost Recon (Future Soldier / Breakpoint)** | Cross-com, drone intel, relay drops, and a small team deniable enough that nobody is coming for them. |
-| **Gears of War** | Squad voice. Gallows humour as the sound of people managing fear. Nobody is eloquent about a friend dying. |
-| **Halo 3: ODST** | Reassembling a scattered squad from fragments, in the dark, out of order. |
-| **Infinite Warfare** | Attritional side-missions with real names attached, and a commander who signs the orders personally. |
-| **Battlefield V (Nordlys, Under No Flag)** | Small, cold, unglamorous operations that don't decide anything. |
-
-**Deliberately not taken:** the setpiece. There is no nuke, no sniper duel, no walk through the ashes. *Bad Copy* is the AC-130 mission for five hours and nothing else.

@@ -7,7 +7,7 @@ function Age({ item, turn }: { item: FeedItem; turn: number }) {
   return <span className="bc-age">{mins} min old</span>
 }
 
-function Report({ item, turn }: { item: FeedItem; turn: number }) {
+function Report({ item, turn, stale }: { item: FeedItem; turn: number; stale?: string }) {
   return (
     <article className={`bc-panel${item.conflict ? ' is-conflict' : ''}`}>
       <div className="bc-head">
@@ -24,6 +24,7 @@ function Report({ item, turn }: { item: FeedItem; turn: number }) {
         ))}
       </div>
       {item.recommendation && <div className="bc-rec">{item.recommendation}</div>}
+      {stale && <div className="bc-late">This arrived after you had already decided. You acted on {stale}.</div>}
       {(item.confidence || item.conflict) && (
         <div className="bc-foot">
           <span>{item.confidence}</span>
@@ -85,6 +86,8 @@ function Outgoing({ item }: { item: FeedItem }) {
 export function Feed() {
   const feed = useGame((s) => s.feed)
   const turn = useGame((s) => s.turn)
+  const beliefs = useGame((s) => s.beliefs)
+  const sol = useGame((s) => s.sol)
 
   if (feed.length === 0) {
     return (
@@ -98,8 +101,22 @@ export function Feed() {
     <div>
       {feed.map((item) => {
         switch (item.kind) {
-          case 'report':
-            return <Report key={item.id} item={item} turn={turn} />
+          case 'report': {
+            const call = beliefs.find((b) => b.sol === sol && b.nodeId === item.nodeId)
+            const contradicts =
+              call &&
+              call.soldierId !== item.soldierId &&
+              typeof item.claimedCount === 'number' &&
+              Math.abs(item.claimedCount - call.believed) > 4
+            return (
+              <Report
+                key={item.id}
+                item={item}
+                turn={turn}
+                stale={contradicts ? `${call.shortName}, who said ${call.believed}` : undefined}
+              />
+            )
+          }
           case 'frago':
             return <Frago key={item.id} item={item} />
           case 'salk':

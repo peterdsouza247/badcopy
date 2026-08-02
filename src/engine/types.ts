@@ -187,6 +187,10 @@ export interface GroundTruth {
 
 export interface Mission {
   id: string
+  /** One sentence telling the player what to actually do. Not fiction. */
+  task: string
+  /** Verbs available this sol. The language grows as the player learns it. */
+  verbs: OrderVerb[]
   sol: number
   title: string
   act: 1 | 2 | 3
@@ -199,6 +203,31 @@ export interface Mission {
   salkOpen?: string
   salkClose?: string
   stub?: boolean
+}
+
+/** An open question the player must answer before the window closes. */
+export interface Decision {
+  id: string
+  nodeId: string
+  nodeName: string
+  options: Array<{
+    soldierId: string
+    shortName: string
+    count: number
+    confidence: Confidence
+    line: string
+  }>
+}
+
+/** What the player decided to act on, and what was actually there. */
+export interface Belief {
+  nodeId: string
+  nodeName: string
+  soldierId: string
+  shortName: string
+  believed: number
+  truth: number
+  sol: number
 }
 
 export interface Toast {
@@ -228,6 +257,11 @@ export interface GameState {
   toasts: Toast[]
   /** Squad ids that have already acted this turn. */
   actedThisTurn: string[]
+  decisions: Decision[]
+  beliefs: Belief[]
+  /** Verbs unlocked so far. The command language grows with the campaign. */
+  unlocked: OrderVerb[]
+  coach: number
   view: 'feed' | 'board' | 'company' | 'orders'
   selectedSquadId: string | null
   dust: boolean

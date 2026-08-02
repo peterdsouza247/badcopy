@@ -651,3 +651,169 @@ body {
     display: none;
   }
 }
+
+
+/* ------------------------------------------------- objective and decisions */
+
+.bc-orders-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 16px;
+  border-bottom: var(--edge);
+  background: rgba(240, 168, 40, 0.05);
+}
+
+.bc-orders-label {
+  font-family: var(--font-chrome);
+  letter-spacing: 0.22em;
+  font-size: 10px;
+  color: var(--signal);
+  flex: 0 0 auto;
+}
+
+.bc-orders-text {
+  font-size: 12.5px;
+  color: var(--bone);
+  line-height: 1.4;
+}
+
+.bc-orders-call {
+  margin-left: auto;
+  flex: 0 0 auto;
+  appearance: none;
+  cursor: pointer;
+  border: 1px solid rgba(216, 65, 47, 0.6);
+  background: rgba(216, 65, 47, 0.12);
+  color: var(--wound);
+  font-family: var(--font-chrome);
+  letter-spacing: 0.18em;
+  font-size: 10.5px;
+  padding: 6px 12px;
+  animation: bc-pulse 1.9s ease-in-out infinite;
+}
+
+@keyframes bc-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+
+.bc-decision {
+  border-color: rgba(240, 168, 40, 0.5);
+  box-shadow: var(--glow-signal);
+}
+
+.bc-ask {
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--bone);
+  margin: 0 0 12px;
+}
+
+.bc-option {
+  padding: 11px 13px;
+}
+
+.bc-option-top {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.bc-option-top b {
+  font-family: var(--font-chrome);
+  letter-spacing: 0.16em;
+  font-size: 13px;
+  color: var(--bone);
+}
+
+.bc-option-top em {
+  font-style: normal;
+  font-family: var(--font-traffic);
+  font-size: 13px;
+  color: var(--signal);
+}
+
+.bc-option-top i {
+  margin-left: auto;
+  font-style: normal;
+  font-family: var(--font-chrome);
+  letter-spacing: 0.16em;
+  font-size: 10px;
+  color: var(--dim);
+}
+
+.bc-known {
+  color: var(--detective) !important;
+  margin-top: 2px;
+}
+
+.bc-calib {
+  padding: 9px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.bc-calib-top {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+  font-family: var(--font-traffic);
+  font-size: 12.5px;
+}
+
+.bc-calib-top span {
+  color: var(--dim);
+}
+
+.bc-calib-top b {
+  margin-left: auto;
+  font-weight: 500;
+  color: var(--signal);
+}
+
+.bc-calib small {
+  display: block;
+  margin-top: 3px;
+  font-size: 11.5px;
+  color: var(--bone);
+}
+
+@media (max-width: 860px) {
+  .bc-orders-bar {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .bc-orders-call {
+    margin-left: 0;
+  }
+}
+
+.bc-late {
+  margin-top: 9px;
+  padding: 7px 10px;
+  border-left: 2px solid var(--wound);
+  background: rgba(216, 65, 47, 0.07);
+  font-size: 11.5px;
+  color: #e0a79f;
+}
+
+.bc-howto {
+  margin: 0;
+  padding-left: 20px;
+  font-size: 12.5px;
+  line-height: 1.7;
+  color: var(--dim);
+}
+
+.bc-howto li {
+  margin-bottom: 5px;
+}
+
+.bc-howto b {
+  color: var(--bone);
+  font-weight: 500;
+}
+
+.bc-howto::marker {
+  color: var(--signal);
+}

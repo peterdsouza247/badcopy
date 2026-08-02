@@ -1,9 +1,10 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// Change `base` to match your GitHub Pages repo name.
-// For https://<user>.github.io/bad-copy/ this must be '/bad-copy/'.
+// Relative base. Works at any repo name, on a custom domain, and when opening
+// the built dist folder directly. Safe here because there is no client side
+// router. If one is ever added, switch to an explicit '/<repo-name>/'.
 export default defineConfig({
   plugins: [react()],
-  base: '/badcopy/',
+  base: './',
 })

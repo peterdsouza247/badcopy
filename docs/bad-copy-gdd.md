@@ -487,5 +487,3 @@ Slice success criterion: **a playtester who has never played a wargame chooses t
 4. **Does a Gone leader get relieved automatically, or does the player have to do it?** Making the player make that call by name is stronger. It may also be one cruelty too many.
 
 ---
-
-*Bad Copy — v0.1. Supersedes* Dead Reckoning *in the Tervin portfolio; the doctrine system survives as Intent (§8.1) and the officer-report conceit is carried over wholesale.*
