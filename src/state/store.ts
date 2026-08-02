@@ -77,6 +77,7 @@ function freshState(seed: string): GameState {
     nodes: buildNodes(),
     pins: {},
     feed: [],
+    archive: [],
     queue: [],
     commandStanding: 62,
     companyTrust: 58,
@@ -212,6 +213,7 @@ export const useGame = create<GameState & Actions>((set, get) => ({
         sentTurn: s.turn,
         arriveTurn: s.turn,
         squadId,
+        sol: s.sol,
         title: `TO ${squad.callsign}`,
         body: target ? `${verb} to ${s.nodes[target]?.name ?? target}.` : `${verb}.`,
       }
@@ -255,6 +257,7 @@ export const useGame = create<GameState & Actions>((set, get) => ({
         sentTurn: s.turn,
         arriveTurn: s.turn,
         squadId,
+        sol: s.sol,
         title: `TO ${leader.shortName}`,
         body: verb,
       }
@@ -289,6 +292,7 @@ export const useGame = create<GameState & Actions>((set, get) => ({
         arriveTurn: s.turn + Number(latency),
         soldierId: leader.id,
         squadId,
+        sol: s.sol,
         title: `${leader.shortName}  ${squad.callsign}`,
         situation: landed ? ex.reply : 'Say again. You are breaking up.',
         details: [],
@@ -403,10 +407,10 @@ export const useGame = create<GameState & Actions>((set, get) => ({
         })
         const total = squads[squad.id].dark ? Infinity : base + delay
         if (Number.isFinite(total)) {
-          queue.push({ ...item, arriveTurn: turn + total })
+          queue.push({ ...item, sol: s.sol, arriveTurn: turn + total })
         } else {
           // Held until they surface. Nothing gets through, including this.
-          queue.push({ ...item, arriveTurn: turn + 6 })
+          queue.push({ ...item, sol: s.sol, arriveTurn: turn + 6 })
         }
       }
     }
@@ -422,6 +426,7 @@ export const useGame = create<GameState & Actions>((set, get) => ({
           stamp: clockFor(turn),
           sentTurn: turn,
           arriveTurn: turn,
+          sol: s.sol,
           title: 'INTERCEPT',
           body: rng.pick(INTERCEPTS),
         })
@@ -604,6 +609,7 @@ export const useGame = create<GameState & Actions>((set, get) => ({
         title: `FRAGO  SOL ${m.sol}`,
         body: m.frago,
         tier: m.tier,
+        sol: m.sol,
       },
     ]
     if (m.salkOpen) {
@@ -613,8 +619,9 @@ export const useGame = create<GameState & Actions>((set, get) => ({
         stamp: clockFor(0),
         sentTurn: 0,
         arriveTurn: 0,
-        title: 'SALK  OPS',
+        title: 'WREN  OPS',
         body: m.salkOpen,
+        sol: m.sol,
       })
     }
 
@@ -628,6 +635,7 @@ export const useGame = create<GameState & Actions>((set, get) => ({
       nodes,
       dust: dust || s.dust,
       feed,
+      archive: [...s.archive, ...s.feed.map((f) => ({ ...f, sol: f.sol ?? s.sol }))],
       queue: [],
       pins: {},
       actedThisTurn: [],

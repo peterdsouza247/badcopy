@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { SPEAK_BLURB, THREAD_HINT } from '../data/dialogue'
 import { COMMS_BLURB, degrade } from '../engine/traits'
 import type { Intent, OrderVerb, SpeakVerb } from '../engine/types'
@@ -22,11 +21,20 @@ const INTENTS: Array<[Intent, string]> = [
   ['Use your judgement', 'Defers to the squad leader.'],
 ]
 
+/**
+ * The order panel lives at the bottom of the day's traffic, because that is
+ * the order you actually do things in: read what came back, then answer it.
+ *
+ * Orders that cannot apply are disabled with the reason on the button, not
+ * hidden. A greyed ENGAGE that says "nothing reported here" teaches the rule.
+ * A missing button teaches nothing.
+ */
 export function Orders() {
   const {
     squads,
     soldiers,
     nodes,
+    pins,
     selectedSquadId,
     actedThisTurn,
     dust,
@@ -37,8 +45,6 @@ export function Orders() {
     dropBeacon,
   } = useGame()
 
-  const [open, setOpen] = useState(true)
-
   const squad = selectedSquadId ? squads[selectedSquadId] : null
   if (!squad) return null
 
@@ -46,39 +52,68 @@ export function Orders() {
   const node = nodes[squad.nodeId]
   const comms = dust ? degrade(node.comms, 1) : node.comms
   const acted = actedThisTurn.includes(squad.id)
+  const living = squad.memberIds.filter((id) => soldiers[id]?.alive).length
+
+  // What the player has been told is here. Never the truth.
+  const pin = pins[squad.nodeId]
+  const reportedContact = Boolean(pin && pin.claims.some((c) => c.count > 0))
+
+  const why = (verb: OrderVerb): string | null => {
+    if (acted) return 'orders already sent this window'
+    switch (verb) {
+      case 'ENGAGE':
+        return reportedContact ? null : 'nothing reported on this ground'
+      case 'BREAK CONTACT':
+        return reportedContact ? null : 'you are not in contact'
+      case 'DIG IN':
+        return squad.standingOrder === 'DIG IN' ? 'already dug in' : null
+      case 'GO DARK':
+        return squad.dark ? 'already dark' : null
+      case 'DETACH':
+        return living >= 4 ? null : 'too few left to split'
+      default:
+        return null
+    }
+  }
+
   const verbs = VERBS.filter(([v]) => unlocked.includes(v))
+  const speakBlocked = acted ? 'orders already sent this window' : !leader?.alive ? 'no one to talk to' : null
 
   return (
-    <div className={`bc-panel bc-orders${open ? ' is-open' : ''}`}>
-      <button className="bc-orders-head" onClick={() => setOpen((o) => !o)} aria-expanded={open}>
-        <span className="bc-caret">{open ? '\u25BE' : '\u25B8'}</span>
+    <section className="bc-panel bc-orders" id="orders">
+      <div className="bc-orders-head">
+        <span className={`bc-dot bc-dot-${squad.id}`} />
         <span className="bc-callsign">{squad.callsign}</span>
         <span className="bc-where">{node.name}</span>
         {acted && <span className="bc-sent-chip">ORDERS SENT</span>}
         <span className={`bc-chip is-${comms}`} title={COMMS_BLURB[comms]}>
           {comms}
         </span>
-      </button>
+      </div>
 
-      {!open ? null : (
-        <>
-
-      {acted ? (
-        <p className="bc-note is-done">
-          Orders sent. One thing per squad per window: command them or talk to them, never both.
-        </p>
-      ) : (
-        <p className="bc-note">{COMMS_BLURB[comms]}</p>
-      )}
+      <p className={`bc-note${acted ? ' is-done' : ''}`}>
+        {acted
+          ? 'One thing per squad per window. Command them or talk to them, never both.'
+          : COMMS_BLURB[comms]}
+      </p>
 
       <div className="bc-section-label">ORDER</div>
       <div className="bc-verbs">
-        {verbs.map(([verb, blurb]) => (
-          <button key={verb} className="bc-btn" disabled={acted} onClick={() => issueOrder(squad.id, verb)}>
-            {verb}
-            <small>{blurb}</small>
-          </button>
-        ))}
+        {verbs.map(([verb, blurb]) => {
+          const blocked = why(verb)
+          return (
+            <button
+              key={verb}
+              className="bc-btn"
+              disabled={Boolean(blocked)}
+              title={blocked ?? blurb}
+              onClick={() => issueOrder(squad.id, verb)}
+            >
+              {verb}
+              <small>{blocked ?? blurb}</small>
+            </button>
+          )
+        })}
       </div>
 
       <div className="bc-section-label">
@@ -87,9 +122,15 @@ export function Orders() {
       </div>
       <div className="bc-verbs">
         {(['STEADY', 'PRESS', 'LEVEL'] as SpeakVerb[]).map((v) => (
-          <button key={v} className="bc-btn" disabled={acted || !leader?.alive} onClick={() => speak(squad.id, v)}>
+          <button
+            key={v}
+            className="bc-btn"
+            disabled={Boolean(speakBlocked)}
+            title={speakBlocked ?? SPEAK_BLURB[v]}
+            onClick={() => speak(squad.id, v)}
+          >
             {v}
-            <small>{SPEAK_BLURB[v]}</small>
+            <small>{speakBlocked ?? SPEAK_BLURB[v]}</small>
           </button>
         ))}
       </div>
@@ -115,14 +156,22 @@ export function Orders() {
         </>
       )}
 
-      {unlocked.length >= 3 && squad.beacons > 0 && !node.beacon && (
-        <button className="bc-btn bc-beacon" onClick={() => dropBeacon(squad.id)}>
-          DROP RELAY BEACON  ({squad.beacons} left)
-          <small>Keeps this ground in contact for good. Everyone can see the emitter, including them.</small>
+      {unlocked.length >= 3 && (
+        <button
+          className="bc-btn bc-beacon"
+          disabled={squad.beacons <= 0 || node.beacon || acted}
+          onClick={() => dropBeacon(squad.id)}
+        >
+          DROP RELAY BEACON ({squad.beacons} left)
+          <small>
+            {node.beacon
+              ? 'this ground already has one'
+              : squad.beacons <= 0
+                ? 'none left to drop'
+                : 'Keeps this ground in contact for good. Everyone can see the emitter, including them.'}
+          </small>
         </button>
       )}
-        </>
-      )}
-    </div>
+    </section>
   )
 }

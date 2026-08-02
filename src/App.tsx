@@ -193,8 +193,8 @@ export default function App() {
             <div className="bc-ops">
               <section className={`bc-column bc-traffic-col${mobilePane === 'traffic' ? ' is-shown' : ''}`}>
                 <Decisions />
-                <Orders />
                 <Feed />
+                <Orders />
               </section>
 
               <section className={`bc-map-col${mobilePane === 'map' ? ' is-shown' : ''}`}>

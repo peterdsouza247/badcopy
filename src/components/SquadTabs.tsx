@@ -22,7 +22,7 @@ export function SquadTabs() {
             key={squad.id}
             role="tab"
             aria-selected={selected}
-            className={`bc-squadtab${acted ? ' is-sent' : ''}`}
+            className={`bc-squadtab bc-tab-${squad.id}${acted ? ' is-sent' : ''}`}
             onClick={() => selectSquad(squad.id)}
           >
             {leader && <Silhouette face={leader.face} alive={leader.alive} size={30} />}

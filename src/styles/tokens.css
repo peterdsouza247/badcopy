@@ -9,6 +9,13 @@
   --bone: #c8ceda;
   --dim: #6d7a90;
 
+  /* One colour per squad. Tinted to sit inside the noir palette rather than
+     fight it, and distinguishable without relying on hue alone. */
+  --sq1: #f0a828;
+  --sq2: #58c6e8;
+  --sq3: #7fd6a2;
+  --sq4: #b892e6;
+
   --font-chrome: 'Oswald', 'Arial Narrow', sans-serif;
   --font-traffic: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
   --font-label: 'Inter', system-ui, sans-serif;

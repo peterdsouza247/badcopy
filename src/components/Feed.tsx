@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import type { FeedItem } from '../engine/types'
 import { formatClock, useGame } from '../state/store'
 
@@ -12,7 +13,8 @@ function Report({ item, turn, stale }: { item: FeedItem; turn: number; stale?: s
   const focused = useGame((s) => s.focusNodeId) === item.nodeId
   return (
     <article
-      className={`bc-panel is-clickable${item.conflict ? ' is-conflict' : ''}${focused ? ' is-focused' : ''}`}
+      className={`bc-panel is-clickable bc-from${item.conflict ? ' is-conflict' : ''}${focused ? ' is-focused' : ''}`}
+      style={item.squadId ? ({ '--from': `var(--${item.squadId})` } as React.CSSProperties) : undefined}
       onClick={() => item.nodeId && focusNode(focused ? null : item.nodeId)}
     >
       <div className="bc-head">
@@ -89,52 +91,86 @@ function Outgoing({ item }: { item: FeedItem }) {
   )
 }
 
+function render(items: FeedItem[], turn: number, beliefs: ReturnType<typeof useGame.getState>['beliefs'], sol: number) {
+  return items.map((item) => {
+    switch (item.kind) {
+      case 'report': {
+        const call = beliefs.find((b) => b.sol === sol && b.nodeId === item.nodeId)
+        const contradicts =
+          call &&
+          call.soldierId !== item.soldierId &&
+          typeof item.claimedCount === 'number' &&
+          Math.abs(item.claimedCount - call.believed) > 4
+        return (
+          <Report
+            key={item.id}
+            item={item}
+            turn={turn}
+            stale={contradicts ? `${call.shortName}, who said ${call.believed}` : undefined}
+          />
+        )
+      }
+      case 'frago':
+        return <Frago key={item.id} item={item} />
+      case 'salk':
+        return <Salk key={item.id} item={item} />
+      case 'intercept':
+        return <Intercept key={item.id} item={item} />
+      case 'outgoing':
+        return <Outgoing key={item.id} item={item} />
+      default:
+        return null
+    }
+  })
+}
+
 export function Feed() {
   const feed = useGame((s) => s.feed)
+  const archive = useGame((s) => s.archive)
   const turn = useGame((s) => s.turn)
   const beliefs = useGame((s) => s.beliefs)
   const sol = useGame((s) => s.sol)
+  const [logOpen, setLogOpen] = useState(false)
 
-  if (feed.length === 0) {
-    return (
-      <div className="bc-panel">
-        <div className="bc-traffic">Nothing on the net. Give someone an order and wait.</div>
-      </div>
-    )
+  const byDay = new Map<number, FeedItem[]>()
+  for (const item of archive) {
+    const s = item.sol ?? 0
+    if (!byDay.has(s)) byDay.set(s, [])
+    byDay.get(s)!.push(item)
   }
+  const earlier = [...byDay.entries()].sort((a, b) => b[0] - a[0])
 
   return (
     <div>
-      {feed.map((item) => {
-        switch (item.kind) {
-          case 'report': {
-            const call = beliefs.find((b) => b.sol === sol && b.nodeId === item.nodeId)
-            const contradicts =
-              call &&
-              call.soldierId !== item.soldierId &&
-              typeof item.claimedCount === 'number' &&
-              Math.abs(item.claimedCount - call.believed) > 4
-            return (
-              <Report
-                key={item.id}
-                item={item}
-                turn={turn}
-                stale={contradicts ? `${call.shortName}, who said ${call.believed}` : undefined}
-              />
-            )
-          }
-          case 'frago':
-            return <Frago key={item.id} item={item} />
-          case 'salk':
-            return <Salk key={item.id} item={item} />
-          case 'intercept':
-            return <Intercept key={item.id} item={item} />
-          case 'outgoing':
-            return <Outgoing key={item.id} item={item} />
-          default:
-            return null
-        }
-      })}
+      {feed.length === 0 ? (
+        <div className="bc-panel">
+          <div className="bc-traffic">Nothing on the net yet. Give someone an order and end the window.</div>
+        </div>
+      ) : (
+        render(feed, turn, beliefs, sol)
+      )}
+
+      {earlier.length > 0 && (
+        <div className="bc-log">
+          <button className="bc-log-head" onClick={() => setLogOpen((o) => !o)} aria-expanded={logOpen}>
+            <span className="bc-caret">{logOpen ? '\u25BE' : '\u25B8'}</span>
+            EARLIER TRAFFIC
+            <em>
+              {earlier.length} sol{earlier.length > 1 ? 's' : ''}, {archive.length} messages
+            </em>
+          </button>
+          {logOpen && (
+            <div className="bc-log-body">
+              {earlier.map(([daySol, items]) => (
+                <div key={daySol}>
+                  <div className="bc-log-day">SOL {daySol}</div>
+                  {render(items, turn, beliefs, daySol)}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   )
 }

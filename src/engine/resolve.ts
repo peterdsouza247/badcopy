@@ -200,6 +200,7 @@ export function buildReport(args: ReportArgs): { item: FeedItem; delay: number }
     soldierId: leader.id,
     squadId: squad.id,
     nodeId: truth.nodeId,
+    sol: undefined,
     title: `${leader.shortName}  ${squad.callsign}`,
     situation: out.situation,
     details,

@@ -40,6 +40,7 @@ export function Board() {
   const svgRef = useRef<SVGSVGElement>(null)
   const [view, setView] = useState<View>({ x: 0, y: 0, k: 1 })
   const drag = useRef<{ x: number; y: number; vx: number; vy: number; moved: boolean } | null>(null)
+  const suppress = useRef(false)
   const pinch = useRef<{ dist: number; k: number } | null>(null)
   const [grabbing, setGrabbing] = useState(false)
 
@@ -87,26 +88,32 @@ export function Board() {
 
   const onPointerDown = (e: React.PointerEvent) => {
     if (e.pointerType === 'mouse' && e.button !== 0) return
+    // No setPointerCapture here. Capturing retargets every later pointer event
+    // to the svg, which swallows the click on the node group and breaks
+    // click to move. Track the drag on window instead.
     drag.current = { x: e.clientX, y: e.clientY, vx: view.x, vy: view.y, moved: false }
+    suppress.current = false
     setGrabbing(true)
-    ;(e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId)
-  }
 
-  const onPointerMove = (e: React.PointerEvent) => {
-    const d = drag.current
-    if (!d) return
-    const dx = e.clientX - d.x
-    const dy = e.clientY - d.y
-    if (Math.abs(dx) > 4 || Math.abs(dy) > 4) d.moved = true
-    setView((v) => ({ ...v, x: d.vx + dx, y: d.vy + dy }))
-  }
-
-  const endDrag = () => {
-    setGrabbing(false)
-    // Leave `moved` readable for the click handler firing right after this.
-    setTimeout(() => {
+    const move = (ev: PointerEvent) => {
+      const d = drag.current
+      if (!d) return
+      const dx = ev.clientX - d.x
+      const dy = ev.clientY - d.y
+      if (Math.abs(dx) > 4 || Math.abs(dy) > 4) d.moved = true
+      setView((v) => ({ ...v, x: d.vx + dx, y: d.vy + dy }))
+    }
+    const up = () => {
+      suppress.current = Boolean(drag.current?.moved)
       drag.current = null
-    }, 0)
+      setGrabbing(false)
+      window.removeEventListener('pointermove', move)
+      window.removeEventListener('pointerup', up)
+      window.removeEventListener('pointercancel', up)
+    }
+    window.addEventListener('pointermove', move)
+    window.addEventListener('pointerup', up)
+    window.addEventListener('pointercancel', up)
   }
 
   const onTouchStart = (e: React.TouchEvent) => {
@@ -139,7 +146,10 @@ export function Board() {
   }
 
   const handleNode = (id: string) => {
-    if (drag.current?.moved) return
+    if (suppress.current) {
+      suppress.current = false
+      return
+    }
     if (!squad || acted || !reachable.includes(id)) return
     issueOrder(squad.id, 'MOVE', id)
   }
@@ -154,10 +164,6 @@ export function Board() {
         aria-label="Noctis Labyrinthus"
         className={grabbing ? 'is-grabbing' : ''}
         onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={endDrag}
-        onPointerCancel={endDrag}
-        onPointerLeave={endDrag}
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
       >
@@ -220,7 +226,9 @@ export function Board() {
                     strokeWidth="1.6"
                   />
                 )}
-                {isHere && <circle cx={n.x} cy={n.y} r="34" fill="none" stroke="var(--signal)" strokeWidth="1.8" />}
+                {isHere && squad && (
+                  <circle cx={n.x} cy={n.y} r="34" fill="none" stroke={`var(--${squad.id})`} strokeWidth="1.8" />
+                )}
                 {focused && (
                   <circle cx={n.x} cy={n.y} r="42" fill="none" stroke="var(--detective)" strokeWidth="1.6" strokeDasharray="5 6" />
                 )}
@@ -274,7 +282,8 @@ export function Board() {
                     x={n.x}
                     y={n.y - 20 - i * 16}
                     textAnchor="middle"
-                    fill={s.id === selectedSquadId ? 'var(--signal)' : '#8d97a8'}
+                    fill={`var(--${s.id})`}
+                    opacity={s.id === selectedSquadId ? 1 : 0.55}
                     fontSize="14"
                     fontFamily="Oswald, sans-serif"
                     letterSpacing="1.4"

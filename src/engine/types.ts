@@ -159,6 +159,8 @@ export interface FeedItem {
   tier?: 'STRAIGHT' | 'SHADED' | 'ROTTEN'
   /** Plain English consequence of a conversation. */
   effect?: string
+  /** Sol this item belongs to. Drives the current day feed. */
+  sol?: number
 }
 
 export interface DeathRecord {
@@ -251,6 +253,8 @@ export interface GameState {
   nodes: Record<string, BoardNode>
   pins: Record<string, Pin>
   feed: FeedItem[]
+  /** Everything from earlier sols, kept for the collapsible log. */
+  archive: FeedItem[]
   queue: FeedItem[]
   commandStanding: number
   companyTrust: number
