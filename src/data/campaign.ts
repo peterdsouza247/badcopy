@@ -24,13 +24,13 @@ export const MISSIONS: Mission[] = [
     startNodes: { sq1: 'lowerchain', sq2: 'bastion', sq3: 'marker2', sq4: 'bastion' },
     frago: `Ash Company assumes responsibility for the Chain from Bastion to Marker 4 as of 0500.
 
-Walk the line. Nothing more than that today. Report anything that is not where the survey says it should be.
+Walk the line. Nothing more than that today. Report anything that isn't where the survey says it should be.
 
-No contact expected. If you get contact, say so and we will move on it.`,
+No contact expected. If you get contact, say so and we'll move on it.`,
     salkOpen:
-      'Kestrel is your eyes and she is wrong about everything. You will want to know by how much. I would start a tally.',
+      "Kestrel is your eyes, and she's wrong about everything. You'll want to know by how much. I'd start a tally.",
     salkClose:
-      'Six of them, maybe. Engineers working a tap. Nobody fired and nobody will tell you the number, so do not go looking for it.',
+      "Six of them, maybe. Engineers working a tap. Nobody fired and nobody will tell you the number, so don't go looking for it.",
   },
   {
     id: 'sol2',
@@ -43,11 +43,11 @@ No contact expected. If you get contact, say so and we will move on it.`,
     objective: 'Escort the engineering party to Tower 6 and hold the ground while they work.',
     turns: 7,
     startNodes: { sq1: 'lowerchain', sq2: 'lowerchain', sq3: 'tower6', sq4: 'bastion' },
-    frago: `Tower 6 has been down since 0200. Engineers will not move without an escort and they are not wrong.
+    frago: `Tower 6 has been down since 0200. Engineers won't move without an escort, and they're not wrong.
 
 Escort the party, hold the ground while they work, come home. Two hours on site, no more. After that the light goes and so does your margin.
 
-You have both beacons. Spend them if you need to. Ask for more and you will get an argument, not a no.`,
+You have both beacons. Spend them if you need to. Ask for more and you'll get an argument, not a no.`,
     salkOpen:
       'Direct route puts them in the graben and out of contact for four turns. Ridge route keeps them talking and costs you six. Your call, not mine.',
   },
@@ -66,10 +66,10 @@ You have both beacons. Spend them if you need to. Ask for more and you will get 
 
 Take it or suppress it, your call which. Second Battalion crosses east of you at 0600 and would appreciate the quiet.
 
-Mortars are yours 0530 to 0700. After that they go back to Second Battalion, no extension. If you cannot hold it, say so now and we will move them.`,
+Mortars are yours 0530 to 0700. After that they go back to Second Battalion, no extension. If you can't hold it, say so now and we'll move them.`,
     salkOpen:
       'Four squads, one ridge, and you are about to get four different ridges. Read the timestamps before you read the confidence.',
-    salkClose: 'Nobody is going to tell you how many were up there. Not tonight, not ever.',
+    salkClose: "Nobody's going to tell you how many were up there. Not tonight, not ever.",
   },
   {
     id: 'sol4',
@@ -82,12 +82,12 @@ Mortars are yours 0530 to 0700. After that they go back to Second Battalion, no 
     objective: 'Cover the water train on the Stair. Detach if you have to.',
     turns: 7,
     startNodes: { sq1: 'stair', sq2: 'marker2', sq3: 'stair', sq4: 'cistern' },
-    frago: `Water train, eleven vehicles, Bastion to the Cistern via the Stair. It goes tonight because it goes every fourth night and they will know that.
+    frago: `Water train, eleven vehicles, Bastion to the Cistern via the Stair. It goes tonight because it goes every fourth night, and they'll know that.
 
-You will want to be on the Stair before the train is. Detach if you have to. I would rather you were thin in two places than late in one.
+You'll want to be on the Stair before the train is. Detach if you have to. I'd rather you were thin in two places than late in one.
 
 Calloway has the route survey. She asked for it.`,
-    salkOpen: 'Calloway requested the survey herself. Eleven days in theatre and she is already doing homework.',
+    salkOpen: "Calloway requested the survey herself. Eleven days in theatre and she's already doing homework.",
   },
   {
     id: 'sol5',
@@ -97,18 +97,18 @@ Calloway has the route survey. She asked for it.`,
     act: 1,
     title: 'Cold Harbour',
     tier: 'STRAIGHT',
-    objective: 'Look at Cold Harbour. Do not get drawn in.',
+    objective: "Look at Cold Harbour. Don't get drawn in.",
     turns: 8,
     startNodes: { sq1: 'stair', sq2: 'cistern', sq3: 'coldharbour', sq4: 'stair' },
     frago: `There is a dead pumping station at Cold Harbour that the survey says has been dead for thirty years and the thermal says has been warm for six days.
 
-Go and look. Do not get drawn in. If it is held, it is held, and we will deal with it as a different problem.
+Go and look. Don't get drawn in. If it is held, it is held, and we will deal with it as a different problem.
 
-There is no relay in that graben and there is not going to be one. You will lose them for a while. Decide now whether you are all right with that.`,
+There is no relay in that graben and there won't be one. You'll lose them for a while. Decide now whether you're all right with that.`,
     salkOpen:
-      'Whoever you send into Cold Harbour, you are not going to hear from until they walk out. Drop a beacon and you will. Drop a beacon and so will everyone else.',
+      "Whoever you send into Cold Harbour, you won't hear from until they walk out. Drop a beacon and you will. Drop a beacon and so will everyone else.",
     salkClose:
-      'Thirty years dead and somebody has been keeping the pumps alive. Put that somewhere you will find it again.',
+      "Thirty years dead and somebody's been keeping the pumps alive. Put that somewhere you'll find it again.",
   },
   {
     id: 'sol7',
@@ -127,7 +127,7 @@ Clear the Sink and push to Marker 4 by last light. Resistance expected to be lig
 
 Confirm receipt.`,
     salkOpen:
-      'Easing according to whom. Available according to whom. I am not telling you to refuse it. I am telling you to notice that nobody signed it.',
+      "Easing according to whom. Available according to whom. I'm not telling you to refuse it. I'm telling you to notice that nobody signed it.",
     salkClose: 'Air was committed. Air was always committed.',
   },
 
@@ -149,7 +149,7 @@ Confirm receipt.`,
 In the interim, patrols are to carry standard load and not standard plus. Duration unaffected.
 
 This is not a matter for query.`,
-    salkOpen: 'Being addressed means somebody has written it down.',
+    salkOpen: "Being addressed means somebody's written it down.",
   },
   {
     id: 'sol9',
@@ -168,7 +168,7 @@ This is not a matter for query.`,
 Company is short and we know it. If you need him held, request it and it will be granted. Nobody here will make you justify it.
 
 Your call.`,
-    salkOpen: 'They are being generous. Notice how that feels.',
+    salkOpen: "They're being generous. Notice how that feels.",
   },
   {
     id: 'sol10',
@@ -182,9 +182,9 @@ Your call.`,
     turns: 8,
     startNodes: { sq1: 'halloran', sq2: 'shelf', sq3: 'halloran', sq4: 'marker4' },
     stub: true,
-    frago: `Signals is picking up traffic off the Cut and cannot place the transmitter. You are closer than they are.
+    frago: `Signals is picking up traffic off the Cut and can't place the transmitter. You are closer than they are.
 
-Sweep the crest line. If you find it, do not destroy it. We would rather listen.`,
+Sweep the crest line. If you find it, don't destroy it. We would rather listen.`,
   },
   {
     id: 'sol11',
@@ -194,17 +194,17 @@ Sweep the crest line. If you find it, do not destroy it. We would rather listen.
     act: 2,
     title: 'Femi',
     tier: 'SHADED',
-    objective: 'Hold your line. Do not move east.',
+    objective: "Hold your line. Don't move east.",
     turns: 8,
     startNodes: { sq1: 'marker4', sq2: 'cistern', sq3: 'graben7', sq4: 'shelf' },
     stub: true,
-    frago: `Second Battalion is in contact east of the Cut and has requested support. We are not in a position to send them anyone.
+    frago: `Second Battalion is in contact east of the Cut and has requested support. We're not in a position to send them anyone.
 
-Hold your line. Do not move east.
+Hold your line. Don't move east.
 
 We appreciate this will read poorly.`,
     salkOpen:
-      'Both transfer requests refused, same signature both times. I am not telling you what to do with that. I am telling you it is in the file and you are the only one who reads the file.',
+      "Both transfer requests refused, same signature both times. I'm not telling you what to do with that. I'm telling you it's in the file, and you're the only one who reads it.",
   },
   {
     id: 'sol12',
@@ -220,9 +220,9 @@ We appreciate this will read poorly.`,
     stub: true,
     frago: `You will move the company to the Cistern works and hold there.
 
-The Chain north of Marker 4 is to be given up. Towers 7 through 11 will not be re manned.
+The Chain north of Marker 4 is to be given up. Towers 7 through 11 won't be re manned.
 
-Do not interpret this as a withdrawal.`,
+Don't interpret this as a withdrawal.`,
     salkClose: 'You just gave away half your line on instruction. Remember that you agreed to it.',
   },
   {
@@ -237,11 +237,11 @@ Do not interpret this as a withdrawal.`,
     turns: 11,
     startNodes: { sq1: 'cistern', sq2: 'cistern', sq3: 'marker6', sq4: 'marker4' },
     stub: true,
-    frago: `We need eyes past Marker 6 and there is no way to do that and stay in contact.
+    frago: `We need eyes past Marker 6 and there's no way to do that and stay in contact.
 
 Send your recon element. Duration is at your discretion but the answer we need is at least four grabens deep.
 
-They will be on their own. That is understood here.`,
+They'll be on their own. That's understood here.`,
   },
   {
     id: 'sol14',
@@ -262,7 +262,7 @@ It has been decided that the Cistern is to be held through the night.
 Withdrawal is not authorised. Adequate support will be provided. Confirm compliance by 0500.
 
 Query window has closed.`,
-    salkOpen: 'It was sent into a window they knew you were dark in. Somebody chose that hour.',
+    salkOpen: "It was sent into a window they knew you'd be dark in. Somebody chose that hour.",
   },
 
   // ---- Act III. Dust. ----
@@ -311,7 +311,7 @@ Assessment is that the storm is worse for them than for you.`,
     stub: true,
     frago: `No change to your task. Hold the works and the approaches until the convoy arrives.`,
     salkOpen:
-      'I pulled the manifest for the convoy. It is not a relief column. Sixty tonnes of shaped charge and a survey team, routed to the Cistern and not to Bastion. I want you to tell me I have read it wrong.',
+      "I pulled the manifest for the convoy. It isn't a relief column. Sixty tonnes of shaped charge and a survey team, routed to the Cistern and not to Bastion. I want you to tell me I've read it wrong.",
   },
   {
     id: 'sol21',
@@ -328,7 +328,7 @@ Assessment is that the storm is worse for them than for you.`,
     frago: `The convoy is on the Stair and will reach the works by last light.
 
 Hold your positions until it does.`,
-    salkClose: 'Whatever you send, I will countersign it. That is not absolution. That is what a warrant officer does.',
+    salkClose: "Whatever you send, I will countersign it. That's not absolution. That is what a warrant officer does.",
   },
 ]
 

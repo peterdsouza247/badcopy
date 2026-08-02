@@ -136,11 +136,7 @@ body {
 
 /* -------------------------------------------------------------------- body */
 
-.bc-body {
-  display: grid;
-  grid-template-columns: 232px 1fr;
-  min-height: 0;
-}
+
 
 .bc-rail {
   border-right: var(--edge);
@@ -157,39 +153,15 @@ body {
   padding: 16px;
 }
 
-.bc-tabs {
-  display: flex;
-  gap: 2px;
-  padding: 0 16px;
-  border-bottom: var(--edge);
-}
 
-.bc-tab {
-  appearance: none;
-  border: 0;
-  background: transparent;
-  color: var(--dim);
-  font-family: var(--font-chrome);
-  letter-spacing: 0.2em;
-  font-size: 12px;
-  padding: 11px 16px;
-  cursor: pointer;
-  border-bottom: 2px solid transparent;
-}
 
-.bc-tab:hover {
-  color: var(--bone);
-}
 
-.bc-tab[aria-selected='true'] {
-  color: var(--signal);
-  border-bottom-color: var(--signal);
-}
 
-.bc-tab:focus-visible {
-  outline: 2px solid var(--detective);
-  outline-offset: -2px;
-}
+
+
+
+
+
 
 /* ------------------------------------------------------------------ panels */
 
@@ -655,43 +627,13 @@ body {
 
 /* ------------------------------------------------- objective and decisions */
 
-.bc-orders-bar {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 9px 16px;
-  border-bottom: var(--edge);
-  background: rgba(240, 168, 40, 0.05);
-}
 
-.bc-orders-label {
-  font-family: var(--font-chrome);
-  letter-spacing: 0.22em;
-  font-size: 10px;
-  color: var(--signal);
-  flex: 0 0 auto;
-}
 
-.bc-orders-text {
-  font-size: 12.5px;
-  color: var(--bone);
-  line-height: 1.4;
-}
 
-.bc-orders-call {
-  margin-left: auto;
-  flex: 0 0 auto;
-  appearance: none;
-  cursor: pointer;
-  border: 1px solid rgba(216, 65, 47, 0.6);
-  background: rgba(216, 65, 47, 0.12);
-  color: var(--wound);
-  font-family: var(--font-chrome);
-  letter-spacing: 0.18em;
-  font-size: 10.5px;
-  padding: 6px 12px;
-  animation: bc-pulse 1.9s ease-in-out infinite;
-}
+
+
+
+
 
 @keyframes bc-pulse {
   0%, 100% { opacity: 1; }
@@ -816,4 +758,417 @@ body {
 
 .bc-howto::marker {
   color: var(--signal);
+}
+
+
+/* ============================================================== OPS LAYOUT */
+/* One screen. Read the traffic, see where it is, act on it, without ever
+   changing context. The old three tab split was the core loop cut into
+   thirds. */
+
+.bc-taskbar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 8px 16px;
+  border-bottom: var(--edge);
+  background: rgba(240, 168, 40, 0.05);
+}
+
+.bc-task-label {
+  font-family: var(--font-chrome);
+  letter-spacing: 0.22em;
+  font-size: 11px;
+  color: var(--signal);
+  flex: 0 0 auto;
+}
+
+.bc-task-text {
+  font-size: 12.5px;
+  color: var(--bone);
+  line-height: 1.4;
+  min-width: 0;
+}
+
+.bc-end {
+  margin-left: auto;
+  flex: 0 0 auto;
+  appearance: none;
+  cursor: pointer;
+  border: 1px solid rgba(88, 198, 232, 0.4);
+  background: rgba(88, 198, 232, 0.08);
+  color: var(--detective);
+  font-family: var(--font-chrome);
+  letter-spacing: 0.2em;
+  font-size: 12px;
+  padding: 8px 16px;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.bc-end em {
+  font-style: normal;
+  font-size: 10px;
+  color: var(--dim);
+  letter-spacing: 0.1em;
+}
+
+.bc-end.is-ready {
+  border-color: rgba(240, 168, 40, 0.7);
+  background: rgba(240, 168, 40, 0.14);
+  color: var(--signal);
+}
+
+.bc-end:disabled {
+  border-color: rgba(216, 65, 47, 0.6);
+  background: rgba(216, 65, 47, 0.12);
+  color: var(--wound);
+  cursor: not-allowed;
+  animation: bc-pulse 1.9s ease-in-out infinite;
+}
+
+.bc-ops {
+  display: grid;
+  grid-template-columns: 210px minmax(0, 1fr) minmax(340px, 420px);
+  min-height: 0;
+}
+
+.bc-column {
+  min-height: 0;
+  overflow-y: auto;
+  padding: 14px;
+}
+
+.bc-map-col {
+  border-left: var(--edge);
+  background: rgba(5, 7, 12, 0.5);
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  overflow: hidden;
+}
+
+/* The map holds its size. Orders scroll under it, so a long orders panel
+   never squeezes the thing you are navigating by. */
+.bc-map-pane {
+  padding: 12px 12px 0;
+}
+
+.bc-orders-pane {
+  min-height: 0;
+  overflow-y: auto;
+  padding: 0 12px 16px;
+}
+
+.bc-single {
+  min-height: 0;
+  overflow-y: auto;
+  padding: 20px;
+  max-width: 760px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.bc-rail {
+  border-right: var(--edge);
+  padding: 12px 10px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.bc-rail-label {
+  font-family: var(--font-chrome);
+  letter-spacing: 0.2em;
+  font-size: 9.5px;
+  color: var(--dim);
+  margin-bottom: 2px;
+}
+
+.bc-where-sm {
+  font-size: 10px;
+  color: var(--dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bc-roster-btn {
+  appearance: none;
+  cursor: pointer;
+  background: transparent;
+  border: var(--edge);
+  color: var(--dim);
+  font-family: var(--font-chrome);
+  letter-spacing: 0.2em;
+  font-size: 11px;
+  padding: 7px 13px;
+}
+
+.bc-roster-btn:hover {
+  color: var(--detective);
+  border-color: rgba(88, 198, 232, 0.4);
+}
+
+/* ------------------------------------------------------------ board panel */
+
+.bc-boardwrap.is-compact svg {
+  width: 100%;
+  height: auto;
+}
+
+.bc-board-hint {
+  padding: 7px 10px;
+  font-size: 11.5px;
+  color: var(--signal);
+  border-top: var(--edge);
+  background: rgba(240, 168, 40, 0.06);
+}
+
+.bc-board-hint.is-done {
+  color: var(--dim);
+  background: transparent;
+}
+
+/* ---------------------------------------------------------- orders panel */
+
+.bc-orders {
+  margin-top: 14px;
+}
+
+.bc-orders-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding-bottom: 8px;
+  border-bottom: var(--edge);
+}
+
+.bc-orders-head .bc-callsign {
+  font-family: var(--font-chrome);
+  letter-spacing: 0.2em;
+  font-size: 14px;
+  color: var(--signal);
+}
+
+.bc-where {
+  font-size: 12px;
+  color: var(--dim);
+}
+
+.bc-chip {
+  margin-left: auto;
+  font-family: var(--font-chrome);
+  letter-spacing: 0.16em;
+  font-size: 10px;
+  padding: 3px 8px;
+  border: 1px solid currentColor;
+}
+
+.bc-chip.is-CLEAR { color: var(--detective); }
+.bc-chip.is-RELAYED { color: var(--signal); }
+.bc-chip.is-THIN { color: var(--signal); opacity: 0.75; }
+.bc-chip.is-DARK { color: var(--wound); }
+
+.bc-note {
+  font-size: 11.5px;
+  color: var(--dim);
+  margin: 8px 0 0;
+  line-height: 1.5;
+}
+
+.bc-note.is-done {
+  color: var(--signal);
+}
+
+.bc-section-label {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-family: var(--font-chrome);
+  letter-spacing: 0.2em;
+  font-size: 9.5px;
+  color: var(--dim);
+  margin: 16px 0 7px;
+}
+
+.bc-section-label em {
+  margin-left: auto;
+  font-style: normal;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+}
+
+.bc-verbs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.bc-verbs .bc-btn {
+  padding: 8px 10px;
+  font-size: 11.5px;
+}
+
+.bc-verbs .bc-btn small {
+  font-size: 10px;
+  margin-top: 2px;
+}
+
+.bc-beacon {
+  margin-top: 14px;
+}
+
+/* ----------------------------------------------------------------- drawer */
+
+.bc-drawer-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  background: rgba(2, 4, 8, 0.7);
+  display: flex;
+  justify-content: flex-end;
+}
+
+.bc-drawer {
+  width: min(560px, 92vw);
+  height: 100%;
+  overflow-y: auto;
+  background: var(--void);
+  border-left: var(--edge-hot);
+  padding: 14px;
+  animation: bc-slide 220ms ease both;
+}
+
+@keyframes bc-slide {
+  from { transform: translateX(24px); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+
+.bc-drawer-head {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.bc-drawer-head span {
+  font-family: var(--font-chrome);
+  letter-spacing: 0.28em;
+  font-size: 13px;
+  color: var(--signal);
+}
+
+.bc-drawer-head button {
+  margin-left: auto;
+  appearance: none;
+  cursor: pointer;
+  background: transparent;
+  border: var(--edge);
+  color: var(--dim);
+  font-family: var(--font-chrome);
+  letter-spacing: 0.2em;
+  font-size: 10.5px;
+  padding: 6px 12px;
+}
+
+/* ----------------------------------------------------------------- mobile */
+
+.bc-mobile-switch { display: none; }
+
+@media (max-width: 1080px) {
+  .bc-ops {
+    grid-template-columns: 180px minmax(0, 1fr) minmax(300px, 360px);
+  }
+}
+
+@media (max-width: 900px) {
+  .bc-ops {
+    grid-template-columns: 1fr;
+  }
+
+  .bc-rail {
+    flex-direction: row;
+    border-right: 0;
+    border-bottom: var(--edge);
+    overflow-x: auto;
+    padding: 8px;
+  }
+
+  .bc-rail-label { display: none; }
+
+  .bc-squad {
+    flex: 0 0 148px;
+  }
+
+  .bc-column {
+    display: none;
+  }
+
+  .bc-column.is-shown {
+    display: block;
+  }
+
+  .bc-map-col {
+    border-left: 0;
+    display: none;
+    grid-template-rows: auto auto;
+    overflow: visible;
+  }
+
+  .bc-map-col.is-shown {
+    display: grid;
+  }
+
+  .bc-mobile-switch {
+    display: flex;
+    gap: 2px;
+    margin-left: auto;
+  }
+
+  .bc-mobile-switch button {
+    appearance: none;
+    cursor: pointer;
+    background: transparent;
+    border: var(--edge);
+    color: var(--dim);
+    font-family: var(--font-chrome);
+    letter-spacing: 0.16em;
+    font-size: 10px;
+    padding: 6px 10px;
+  }
+
+  .bc-mobile-switch button[aria-pressed='true'] {
+    color: var(--signal);
+    border-color: rgba(240, 168, 40, 0.5);
+  }
+
+  .bc-end {
+    margin-left: 0;
+  }
+
+  .bc-taskbar {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .bc-meters { display: none; }
+}
+
+.bc-panel.is-clickable { cursor: pointer; }
+.bc-panel.is-clickable:hover { border-color: rgba(88, 198, 232, 0.34); }
+.bc-panel.is-focused {
+  border-color: rgba(88, 198, 232, 0.6);
+  box-shadow: var(--glow-detective);
+}
+
+.bc-effect {
+  margin-top: 9px;
+  padding: 7px 10px;
+  border-left: 2px solid var(--detective);
+  background: rgba(88, 198, 232, 0.06);
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: #a9c6d4;
 }

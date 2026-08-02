@@ -88,6 +88,7 @@ function freshState(seed: string): GameState {
     beliefs: [],
     unlocked: MISSIONS[0].verbs,
     coach: 0,
+    focusNodeId: null,
     view: 'feed',
     selectedSquadId: 'sq1',
     dust: false,
@@ -118,6 +119,7 @@ interface Actions {
   endTurn: () => void
   believe: (decisionId: string, soldierId: string) => void
   advanceCoach: () => void
+  focusNode: (id: string | null) => void
   nextMission: () => void
   dismissToast: (id: string) => void
   reset: () => void
@@ -291,6 +293,7 @@ export const useGame = create<GameState & Actions>((set, get) => ({
         situation: landed ? ex.reply : 'Say again. You are breaking up.',
         details: [],
         confidence: undefined,
+        effect: landed ? ex.effect : 'It did not get through cleanly. Worse by a step.',
       }
 
       const toasts = [...s.toasts]
@@ -674,6 +677,8 @@ export const useGame = create<GameState & Actions>((set, get) => ({
     }),
 
   advanceCoach: () => set((s) => ({ coach: s.coach + 1 })),
+
+  focusNode: (focusNodeId) => set({ focusNodeId }),
 
   dismissToast: (id) => set((s) => ({ toasts: s.toasts.filter((t) => t.id !== id) })),
 

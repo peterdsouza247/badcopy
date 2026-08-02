@@ -1,5 +1,5 @@
-import { useEffect } from 'react'
-import { Board } from './components/Board'
+import { useEffect, useState } from 'react'
+import { Board, BoardLegend } from './components/Board'
 import { Telemetry, Toasts, TopBar } from './components/Chrome'
 import { Company } from './components/Company'
 import { Calibration, Decisions } from './components/Decision'
@@ -33,27 +33,19 @@ function Title() {
           </div>
           <ol className="bc-howto">
             <li>
-              <b>Give orders.</b> Pick a squad on the left, send it somewhere.
+              <b>Pick a squad, give it an order.</b> Click a lit place on the map to send them there.
             </li>
             <li>
               <b>End the window.</b> Time passes. You cannot watch. Reports come back.
             </li>
             <li>
-              <b>Decide who to believe.</b> Your people will contradict each other. Nobody will tell you who
-              is right.
+              <b>Decide who to believe.</b> Your people contradict each other. Nobody will tell you who is
+              right.
             </li>
             <li>
-              <b>Live with it.</b> After the sol, Wren pulls the records and you find out what was really
-              there. Too late to help, early enough to learn.
+              <b>Live with it.</b> After the sol, Wren pulls the records and you learn what was really there.
             </li>
           </ol>
-        </div>
-
-        <div className="bc-panel">
-          <div className="bc-head">
-            <span>CAMPAIGN OBJECTIVE</span>
-          </div>
-          <div className="bc-traffic">{CAMPAIGN_OBJECTIVE}</div>
         </div>
 
         <div style={{ display: 'grid', gap: 8, marginTop: 4 }}>
@@ -61,18 +53,13 @@ function Title() {
             TAKE COMMAND
             <small>Sol 1. Noctis Labyrinthus. Seed {seed}.</small>
           </button>
-          <button
-            className="bc-btn"
-            onClick={() => {
-              if (loadSaved()) return
-            }}
-          >
+          <button className="bc-btn" onClick={() => loadSaved()}>
             RESUME
             <small>Continue a saved campaign if one exists.</small>
           </button>
           <button className="bc-btn" onClick={newCampaign}>
             NEW SEED
-            <small>Traits and dispositions are re rolled. Same names, different people.</small>
+            <small>Same names, different people.</small>
           </button>
         </div>
       </div>
@@ -83,37 +70,36 @@ function Title() {
 function Debrief() {
   const { missionIndex, casualties, nextMission } = useGame()
   const mission = MISSIONS[missionIndex]
-  const last = MISSIONS[missionIndex + 1]
+  const next = MISSIONS[missionIndex + 1]
 
   return (
-    <div className="bc-main">
+    <div className="bc-single">
       <div className="bc-eyebrow">SOL {mission.sol} CLOSED</div>
       <div className="bc-panel">
         <div className="bc-head">
           <span>{mission.title.toUpperCase()}</span>
         </div>
-        <div className="bc-traffic">
-          The window is closed. Nobody is going to tell you what was actually on that ground, tonight or ever.
-        </div>
+        <div className="bc-traffic">The window is closed. Nothing more is coming in tonight.</div>
       </div>
+
+      <Calibration />
 
       {mission.salkClose && (
         <div className="bc-panel bc-salk">
           <div className="bc-head">
-            <span>SALK  OPS</span>
+            <span>WREN  OPS</span>
           </div>
           <div className="bc-traffic">{mission.salkClose}</div>
         </div>
       )}
 
-      <Calibration />
       <NameCards />
 
       <button className="bc-btn is-primary" onClick={nextMission}>
-        {last ? `PROCEED TO SOL ${last.sol}` : 'END OF WRITTEN CONTENT'}
+        {next ? `PROCEED TO SOL ${next.sol}` : 'END OF WRITTEN CONTENT'}
         <small>
           {casualties.length > 0
-            ? 'Replacements will be drawn from theatre reserve. They will not know what you know.'
+            ? 'Replacements arrive from theatre reserve. They will not know what you know.'
             : 'The company is intact. That will not last.'}
         </small>
       </button>
@@ -125,7 +111,7 @@ function Over() {
   const reset = useGame((s) => s.reset)
   const casualties = useGame((s) => s.casualties)
   return (
-    <div className="bc-main">
+    <div className="bc-single">
       <div className="bc-eyebrow">AFTER ACTION</div>
       <div className="bc-panel">
         <div className="bc-traffic">
@@ -144,12 +130,14 @@ function Over() {
 }
 
 function Rail() {
-  const { squads, soldiers, selectedSquadId, actedThisTurn, selectSquad } = useGame()
+  const { squads, soldiers, selectedSquadId, actedThisTurn, selectSquad, nodes } = useGame()
   return (
     <aside className="bc-rail">
+      <div className="bc-rail-label">YOUR COMPANY</div>
       {Object.values(squads).map((squad) => {
         const leader = soldiers[squad.leaderId]
         const living = squad.memberIds.filter((id) => soldiers[id]?.alive).length
+        const acted = actedThisTurn.includes(squad.id)
         return (
           <button
             key={squad.id}
@@ -158,14 +146,16 @@ function Rail() {
             onClick={() => selectSquad(squad.id)}
           >
             <div className="bc-squad-top">
-              {leader && <Silhouette face={leader.face} alive={leader.alive} size={26} />}
-              <span className="bc-callsign">{squad.callsign}</span>
-              {actedThisTurn.includes(squad.id) && <span className="bc-acted">SENT</span>}
+              {leader && <Silhouette face={leader.face} alive={leader.alive} size={28} />}
+              <div style={{ minWidth: 0 }}>
+                <div className="bc-callsign">{squad.callsign}</div>
+                <div className="bc-where-sm">{nodes[squad.nodeId]?.name}</div>
+              </div>
+              {acted && <span className="bc-acted">SENT</span>}
             </div>
             <div className="bc-squad-sub">
               <span className={`bc-nerve-${leader?.nerve ?? 'Steady'}`}>{leader?.nerve}</span>
               <span>{living} up</span>
-              <span>{squad.standingOrder}</span>
             </div>
           </button>
         )
@@ -175,16 +165,19 @@ function Rail() {
 }
 
 export default function App() {
-  const { started, phase, view, setView, endTurn, turn, missionIndex, actedThisTurn, squads } = useGame()
+  const { started, phase, endTurn, turn, missionIndex, actedThisTurn, squads, decisions } = useGame()
+  const [drawer, setDrawer] = useState(false)
+  const [mobilePane, setMobilePane] = useState<'traffic' | 'map'>('traffic')
   const mission = MISSIONS[missionIndex]
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Enter' && phase === 'ops') endTurn()
+      if (e.key === 'Enter' && phase === 'ops' && decisions.length === 0) endTurn()
+      if (e.key === 'Escape') setDrawer(false)
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [endTurn, phase])
+  }, [endTurn, phase, decisions.length])
 
   if (!started) {
     return (
@@ -196,60 +189,57 @@ export default function App() {
   }
 
   const allActed = Object.keys(squads).every((id) => actedThisTurn.includes(id))
-  const openCalls = useGame.getState().decisions.length
+  const blocked = decisions.length > 0
 
   return (
     <>
       <div className="bc-atmosphere" />
       <div className="bc-shell">
-        <TopBar />
+        <TopBar onOpenCompany={() => setDrawer(true)} />
 
         {phase === 'ops' && (
           <>
-            <nav className="bc-tabs" role="tablist">
-              {(['feed', 'board', 'company', 'orders'] as const).map((v) => (
-                <button
-                  key={v}
-                  role="tab"
-                  aria-selected={view === v}
-                  className="bc-tab"
-                  onClick={() => setView(v)}
-                >
-                  {v.toUpperCase()}
+            <div className="bc-taskbar">
+              <span className="bc-task-label">SOL {mission.sol}</span>
+              <span className="bc-task-text">{mission.task}</span>
+              <div className="bc-mobile-switch">
+                <button aria-pressed={mobilePane === 'traffic'} onClick={() => setMobilePane('traffic')}>
+                  TRAFFIC
                 </button>
-              ))}
+                <button aria-pressed={mobilePane === 'map'} onClick={() => setMobilePane('map')}>
+                  MAP
+                </button>
+              </div>
               <button
-                className="bc-tab"
-                style={{ marginLeft: 'auto', color: allActed ? 'var(--signal)' : undefined }}
+                className={`bc-end${allActed && !blocked ? ' is-ready' : ''}`}
                 onClick={endTurn}
+                disabled={blocked}
+                title={blocked ? 'Answer the open call first' : 'Advance time'}
               >
-                END WINDOW  {turn + 1} / {mission.turns}
+                {blocked ? 'DECIDE FIRST' : 'END WINDOW'}
+                <em>
+                  {turn + 1} of {mission.turns}
+                </em>
               </button>
-            </nav>
-
-            <div className="bc-orders-bar">
-              <span className="bc-orders-label">YOUR TASK</span>
-              <span className="bc-orders-text">{mission.task}</span>
-              {openCalls > 0 && (
-                <button className="bc-orders-call" onClick={() => setView('feed')}>
-                  {openCalls} DECISION{openCalls > 1 ? 'S' : ''} WAITING
-                </button>
-              )}
             </div>
 
-            <div className="bc-body">
+            <div className="bc-ops">
               <Rail />
-              <main className="bc-main">
-                {view === 'feed' && (
-                  <>
-                    <Decisions />
-                    <Feed />
-                  </>
-                )}
-                {view === 'board' && <Board />}
-                {view === 'company' && <Company />}
-                {view === 'orders' && <Orders />}
-              </main>
+
+              <section className={`bc-column bc-traffic-col${mobilePane === 'traffic' ? ' is-shown' : ''}`}>
+                <Decisions />
+                <Feed />
+              </section>
+
+              <section className={`bc-map-col${mobilePane === 'map' ? ' is-shown' : ''}`}>
+                <div className="bc-map-pane">
+                  <Board compact />
+                  <BoardLegend />
+                </div>
+                <div className="bc-orders-pane">
+                  <Orders />
+                </div>
+              </section>
             </div>
           </>
         )}
@@ -259,7 +249,22 @@ export default function App() {
 
         <Telemetry />
       </div>
+
+      {drawer && (
+        <div className="bc-drawer-scrim" onClick={() => setDrawer(false)}>
+          <aside className="bc-drawer" onClick={(e) => e.stopPropagation()}>
+            <div className="bc-drawer-head">
+              <span>THE COMPANY</span>
+              <button onClick={() => setDrawer(false)}>CLOSE</button>
+            </div>
+            <Company />
+          </aside>
+        </div>
+      )}
+
       <Toasts />
     </>
   )
 }
+
+export { CAMPAIGN_OBJECTIVE }

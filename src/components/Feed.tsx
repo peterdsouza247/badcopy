@@ -8,8 +8,13 @@ function Age({ item, turn }: { item: FeedItem; turn: number }) {
 }
 
 function Report({ item, turn, stale }: { item: FeedItem; turn: number; stale?: string }) {
+  const focusNode = useGame((s) => s.focusNode)
+  const focused = useGame((s) => s.focusNodeId) === item.nodeId
   return (
-    <article className={`bc-panel${item.conflict ? ' is-conflict' : ''}`}>
+    <article
+      className={`bc-panel is-clickable${item.conflict ? ' is-conflict' : ''}${focused ? ' is-focused' : ''}`}
+      onClick={() => item.nodeId && focusNode(focused ? null : item.nodeId)}
+    >
       <div className="bc-head">
         <span className="bc-stamp">{formatClock(item.stamp)}</span>
         <span>{item.title}</span>
@@ -24,6 +29,7 @@ function Report({ item, turn, stale }: { item: FeedItem; turn: number; stale?: s
         ))}
       </div>
       {item.recommendation && <div className="bc-rec">{item.recommendation}</div>}
+      {item.effect && <div className="bc-effect">{item.effect}</div>}
       {stale && <div className="bc-late">This arrived after you had already decided. You acted on {stale}.</div>}
       {(item.confidence || item.conflict) && (
         <div className="bc-foot">

@@ -3,7 +3,7 @@ import { COMMS_BLURB, degrade } from '../engine/traits'
 import type { CommsState } from '../engine/types'
 import { formatClock, useGame } from '../state/store'
 
-export function TopBar() {
+export function TopBar({ onOpenCompany }: { onOpenCompany?: () => void }) {
   const { sol, turn, squads, nodes, dust, commandStanding, companyTrust, selectedSquadId } = useGame()
   const squad = selectedSquadId ? squads[selectedSquadId] : undefined
   const node = squad ? nodes[squad.nodeId] : undefined
@@ -34,6 +34,12 @@ export function TopBar() {
       <div className={`bc-comms is-${state}`} title={COMMS_BLURB[state]}>
         {squad ? squad.callsign : 'LINK'} <b>{state}</b>
       </div>
+
+      {onOpenCompany && (
+        <button className="bc-roster-btn" onClick={onOpenCompany}>
+          ROSTER
+        </button>
+      )}
     </header>
   )
 }

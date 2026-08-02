@@ -24,8 +24,7 @@ export function Decisions() {
             <span className="bc-stamp">{d.nodeName}</span>
           </div>
           <p className="bc-ask">
-            Your people disagree about what is on this ground. You cannot check. Pick the account you are
-            going to act on.
+            Your people disagree about what's on this ground, and you can't check. Pick the one you're going to act on.
           </p>
           <div style={{ display: 'grid', gap: 8 }}>
             {d.options.map((o) => {
@@ -74,13 +73,13 @@ export function Calibration() {
         <span>WREN  AFTER ACTION</span>
       </div>
       <p style={{ fontSize: 12.5, color: 'var(--dim)', margin: '0 0 12px', lineHeight: 1.6 }}>
-        I pulled the records. This is what was actually on that ground, for whatever it is worth to you now.
+        I pulled the records. Here's what was actually on that ground, for whatever it's worth to you now.
       </p>
       {rows.map((b) => {
         const gap = b.believed - b.truth
         const verdict =
           Math.abs(gap) <= 2
-            ? 'That was close enough to act on.'
+            ? 'Close enough to act on.'
             : gap > 0
               ? `${b.shortName} said more than there were. By ${gap}.`
               : `${b.shortName} said fewer than there were. By ${Math.abs(gap)}.`

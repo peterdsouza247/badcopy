@@ -157,6 +157,8 @@ export interface FeedItem {
   conflict?: boolean
   claimedCount?: number
   tier?: 'STRAIGHT' | 'SHADED' | 'ROTTEN'
+  /** Plain English consequence of a conversation. */
+  effect?: string
 }
 
 export interface DeathRecord {
@@ -262,6 +264,7 @@ export interface GameState {
   /** Verbs unlocked so far. The command language grows with the campaign. */
   unlocked: OrderVerb[]
   coach: number
+  focusNodeId: string | null
   view: 'feed' | 'board' | 'company' | 'orders'
   selectedSquadId: string | null
   dust: boolean
