@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
-import { Board, BoardLegend } from './components/Board'
+import { Board } from './components/Board'
 import { Telemetry, Toasts, TopBar } from './components/Chrome'
 import { Company } from './components/Company'
 import { Calibration, Decisions } from './components/Decision'
 import { Feed, NameCards } from './components/Feed'
 import { Orders } from './components/Orders'
-import { Silhouette } from './components/Silhouette'
+import { SquadTabs } from './components/SquadTabs'
 import { CAMPAIGN_OBJECTIVE, MISSIONS, useGame } from './state/store'
 
 function Title() {
@@ -129,41 +129,6 @@ function Over() {
   )
 }
 
-function Rail() {
-  const { squads, soldiers, selectedSquadId, actedThisTurn, selectSquad, nodes } = useGame()
-  return (
-    <aside className="bc-rail">
-      <div className="bc-rail-label">YOUR COMPANY</div>
-      {Object.values(squads).map((squad) => {
-        const leader = soldiers[squad.leaderId]
-        const living = squad.memberIds.filter((id) => soldiers[id]?.alive).length
-        const acted = actedThisTurn.includes(squad.id)
-        return (
-          <button
-            key={squad.id}
-            className="bc-squad"
-            aria-current={selectedSquadId === squad.id}
-            onClick={() => selectSquad(squad.id)}
-          >
-            <div className="bc-squad-top">
-              {leader && <Silhouette face={leader.face} alive={leader.alive} size={28} />}
-              <div style={{ minWidth: 0 }}>
-                <div className="bc-callsign">{squad.callsign}</div>
-                <div className="bc-where-sm">{nodes[squad.nodeId]?.name}</div>
-              </div>
-              {acted && <span className="bc-acted">SENT</span>}
-            </div>
-            <div className="bc-squad-sub">
-              <span className={`bc-nerve-${leader?.nerve ?? 'Steady'}`}>{leader?.nerve}</span>
-              <span>{living} up</span>
-            </div>
-          </button>
-        )
-      })}
-    </aside>
-  )
-}
-
 export default function App() {
   const { started, phase, endTurn, turn, missionIndex, actedThisTurn, squads, decisions } = useGame()
   const [drawer, setDrawer] = useState(false)
@@ -199,6 +164,8 @@ export default function App() {
 
         {phase === 'ops' && (
           <>
+            <SquadTabs />
+
             <div className="bc-taskbar">
               <span className="bc-task-label">SOL {mission.sol}</span>
               <span className="bc-task-text">{mission.task}</span>
@@ -224,21 +191,14 @@ export default function App() {
             </div>
 
             <div className="bc-ops">
-              <Rail />
-
               <section className={`bc-column bc-traffic-col${mobilePane === 'traffic' ? ' is-shown' : ''}`}>
                 <Decisions />
+                <Orders />
                 <Feed />
               </section>
 
               <section className={`bc-map-col${mobilePane === 'map' ? ' is-shown' : ''}`}>
-                <div className="bc-map-pane">
-                  <Board compact />
-                  <BoardLegend />
-                </div>
-                <div className="bc-orders-pane">
-                  <Orders />
-                </div>
+                <Board />
               </section>
             </div>
           </>

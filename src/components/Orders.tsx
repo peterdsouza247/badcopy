@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { SPEAK_BLURB, THREAD_HINT } from '../data/dialogue'
 import { COMMS_BLURB, degrade } from '../engine/traits'
 import type { Intent, OrderVerb, SpeakVerb } from '../engine/types'
@@ -36,6 +37,8 @@ export function Orders() {
     dropBeacon,
   } = useGame()
 
+  const [open, setOpen] = useState(true)
+
   const squad = selectedSquadId ? squads[selectedSquadId] : null
   if (!squad) return null
 
@@ -46,14 +49,19 @@ export function Orders() {
   const verbs = VERBS.filter(([v]) => unlocked.includes(v))
 
   return (
-    <div className="bc-orders">
-      <div className="bc-orders-head">
+    <div className={`bc-panel bc-orders${open ? ' is-open' : ''}`}>
+      <button className="bc-orders-head" onClick={() => setOpen((o) => !o)} aria-expanded={open}>
+        <span className="bc-caret">{open ? '\u25BE' : '\u25B8'}</span>
         <span className="bc-callsign">{squad.callsign}</span>
         <span className="bc-where">{node.name}</span>
+        {acted && <span className="bc-sent-chip">ORDERS SENT</span>}
         <span className={`bc-chip is-${comms}`} title={COMMS_BLURB[comms]}>
           {comms}
         </span>
-      </div>
+      </button>
+
+      {!open ? null : (
+        <>
 
       {acted ? (
         <p className="bc-note is-done">
@@ -112,6 +120,8 @@ export function Orders() {
           DROP RELAY BEACON  ({squad.beacons} left)
           <small>Keeps this ground in contact for good. Everyone can see the emitter, including them.</small>
         </button>
+      )}
+        </>
       )}
     </div>
   )
